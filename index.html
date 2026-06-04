@@ -898,27 +898,35 @@ const IC = {
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-// vku_active = { staff_id: ['code1','code2',...], ... } — устанавливается сотрудниками
-function getActiveMap() {
-  return {};
-}
+// CACHE_ACTIVE = { staff_id: ['code1','code2',...], ... } — устанавливается сотрудниками
+let CACHE_ACTIVE_INDEX = {};
 
-function getActivePrograms() {
-  return [];
-}
-
-function getActiveStaffByCode(code) {
-  if (typeof getStaffByProgram === 'function') {
-    return getStaffByProgram(code);
+// Подписываемся на Firebase — получаем активные ОП в реальном времени
+window.addEventListener('DOMContentLoaded', function() {
+  if (window.db) {
+    window.db.ref('active').on('value', function(snap) {
+      CACHE_ACTIVE_INDEX = snap.val() || {};
+      if (S && S.step === 'level') render(); // обновляем экран выбора уровня
+    });
   }
-  return null;
+});
+
+// Возвращает плоский массив всех активных кодов ОП от всех сотрудников
+function getActivePrograms() {
+  const all = [];
+  Object.values(CACHE_ACTIVE_INDEX).forEach(function(arr) {
+    if (Array.isArray(arr)) arr.forEach(function(c) { all.push(c); });
+  });
+  return all;
 }
-// Найти сотрудника по активному коду
+
+// Найти сотрудника по активному коду ОП
 function getActiveStaffByCode(code) {
-  const m = getActiveMap();
-  const staffId = Object.keys(m).find(id => m[id].includes(code));
+  const staffId = Object.keys(CACHE_ACTIVE_INDEX).find(function(id) {
+    return Array.isArray(CACHE_ACTIVE_INDEX[id]) && CACHE_ACTIVE_INDEX[id].includes(code);
+  });
   if (!staffId || typeof STAFF_CONFIG === 'undefined') return null;
-  return STAFF_CONFIG.find(s => s.id === staffId) || null;
+  return STAFF_CONFIG.find(function(s) { return s.id === staffId; }) || null;
 }
 
 let S = { step:'level', level:null, ticket:null, search:'' };
