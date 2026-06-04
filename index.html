@@ -743,6 +743,114 @@ body::after {
 .sp1 { animation: sparkle 1.6s .0s ease-in-out infinite; }
 .sp2 { animation: sparkle 1.6s .5s ease-in-out infinite; }
 .sp3 { animation: sparkle 1.6s 1s ease-in-out infinite; }
+
+/* ── CALL NOTIFICATION OVERLAY ── */
+#call-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  animation: overlayIn .3s ease;
+}
+#call-overlay.show { display: flex; }
+@keyframes overlayIn { from { opacity:0; } to { opacity:1; } }
+
+.call-card {
+  background: white;
+  border-radius: 32px;
+  padding: 40px 32px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(0,0,0,.4);
+  animation: cardPop .4s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  overflow: hidden;
+}
+@keyframes cardPop { from { transform:scale(.6) translateY(40px); opacity:0; } to { transform:none; opacity:1; } }
+
+.call-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(5,150,105,.08), rgba(16,185,129,.04));
+  pointer-events: none;
+}
+
+.call-icon-ring {
+  width: 90px; height: 90px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 0 12px rgba(5,150,105,.15), 0 0 0 24px rgba(5,150,105,.07);
+  animation: ringPulse 1.5s ease-in-out infinite;
+}
+@keyframes ringPulse {
+  0%,100% { box-shadow: 0 0 0 12px rgba(5,150,105,.15), 0 0 0 24px rgba(5,150,105,.07); }
+  50%     { box-shadow: 0 0 0 16px rgba(5,150,105,.2),  0 0 0 32px rgba(5,150,105,.1); }
+}
+.call-icon-ring svg { width: 44px; height: 44px; color: white; }
+
+.call-title {
+  font-size: 15px; font-weight: 700; color: #059669;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.call-num {
+  font-size: 64px; font-weight: 900; color: #059669;
+  line-height: 1; letter-spacing: -3px;
+  margin-bottom: 8px;
+}
+.call-num span { font-size: 28px; letter-spacing: 0; }
+.call-sub {
+  font-size: 14px; color: #374151; font-weight: 600;
+  margin-bottom: 4px;
+}
+.call-cab {
+  font-size: 13px; color: #6b7280;
+  margin-bottom: 28px;
+}
+.call-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  border: none; border-radius: 16px;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(5,150,105,.35);
+  transition: all .2s;
+}
+.call-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(5,150,105,.45); }
+
+/* waiting state badge on ticket */
+.ticket-status-bar {
+  margin: 0 20px 16px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.tsb-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34,197,94,.2);
+  animation: dotPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes dotPulse {
+  0%,100% { box-shadow: 0 0 0 4px rgba(34,197,94,.2); }
+  50%     { box-shadow: 0 0 0 8px rgba(34,197,94,.1); }
+}
+.tsb-text { font-size: 12.5px; font-weight: 600; color: #166534; flex: 1; }
+.tsb-text b { color: #15803d; }
+
 </style>
 </head>
 <body>
@@ -1230,6 +1338,113 @@ function goStep(step) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
   render();
+
+
+// ── CALL NOTIFICATION ──────────────────────────────────────────────────────
+let callListener = null;
+
+function startCallListener() {
+  if (!S.ticket || !S.ticket.staffId || !window.db) return;
+  stopCallListener();
+  const lvlIdx = ['bachelor','master','doctor','college'].indexOf(S.level);
+  const prefix = ['B','M','D','C'][lvlIdx] || 'B';
+  const myNum = S.ticket.number;
+
+  callListener = window.db.ref('queues/' + S.ticket.staffId + '/current')
+    .on('value', function(snap) {
+      const cur = snap.val();
+      if (cur && cur == myNum) {
+        showCallNotification(prefix, myNum);
+      }
+    });
+}
+
+function stopCallListener() {
+  if (callListener && S.ticket && window.db) {
+    window.db.ref('queues/' + S.ticket.staffId + '/current').off('value', callListener);
+    callListener = null;
+  }
+}
+
+function showCallNotification(prefix, num) {
+  const numStr = prefix + '-' + String(num).padStart(3,'0');
+  const cab = S.ticket ? S.ticket.cabinet : '—';
+  const floor = S.ticket ? S.ticket.floor : '';
+
+  const titles = { rus:'Вас вызывают!', kaz:'Сізді шақырды!', eng:'You are called!' };
+  const subs   = { rus:'Пожалуйста, пройдите в кабинет', kaz:'Кабинетке өтіңіз', eng:'Please go to the office' };
+
+  document.getElementById('co-title').textContent = titles[lang] || titles.rus;
+  document.getElementById('co-num').innerHTML  = '<span>' + prefix + '-</span>' + String(num).padStart(3,'0');
+  document.getElementById('co-sub').textContent = subs[lang] || subs.rus;
+  document.getElementById('co-cab').textContent = 'Кабинет ' + cab + ' · ' + floor;
+
+  const overlay = document.getElementById('call-overlay');
+  overlay.classList.add('show');
+
+  // Vibrate if supported
+  if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 500]);
+
+  // Sound beep
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 200, 400].forEach(function(delay) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.3);
+      osc.start(ctx.currentTime + delay/1000);
+      osc.stop(ctx.currentTime + delay/1000 + 0.3);
+    });
+  } catch(e) {}
+}
+
+function dismissCall() {
+  document.getElementById('call-overlay').classList.remove('show');
+}
+
+// Update render to add status bar and start listener on ticket step
+const _origRender = render;
+render = function() {
+  _origRender();
+  if (S.step === 'ticket') {
+    startCallListener();
+    // Inject live status bar into ticket
+    const lvlIdx = ['bachelor','master','doctor','college'].indexOf(S.level);
+    const prefix = ['B','M','D','C'][lvlIdx] || 'B';
+    const numStr = prefix + '-' + String(S.ticket.number).padStart(3,'0');
+    const statusTexts = {
+      rus: 'Ожидайте вызова — <b>' + numStr + '</b>. Вы получите уведомление.',
+      kaz: 'Шақырылуды күтіңіз — <b>' + numStr + '</b>. Хабарлама аласыз.',
+      eng: 'Wait to be called — <b>' + numStr + '</b>. You will get a notification.',
+    };
+    const bar = document.createElement('div');
+    bar.className = 'ticket-status-bar';
+    bar.innerHTML = '<div class="tsb-dot"></div><div class="tsb-text">' + (statusTexts[lang] || statusTexts.rus) + '</div>';
+    const notice = document.querySelector('.ticket-notice');
+    if (notice) notice.parentNode.insertBefore(bar, notice);
+  } else {
+    stopCallListener();
+  }
+};
+
 </script>
+
+<!-- CALL NOTIFICATION OVERLAY -->
+<div id="call-overlay">
+  <div class="call-card">
+    <div class="call-icon-ring">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+    </div>
+    <div class="call-title" id="co-title">Сізді шақырды!</div>
+    <div class="call-num" id="co-num"><span>B-</span>001</div>
+    <div class="call-sub" id="co-sub">Кабинетке өтіңіз</div>
+    <div class="call-cab" id="co-cab">Кабинет 101 · 1 этаж</div>
+    <button class="call-btn" id="co-btn" onclick="dismissCall()">Түсіндім / Понятно</button>
+  </div>
+</div>
+
 </body>
 </html>
