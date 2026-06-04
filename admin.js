@@ -55,35 +55,21 @@ function getActive() {
 
 function setActive(obj) {
   CACHE_ACTIVE = obj;
-  db.ref('active').set(obj);
-}
-
-function getMyActive() {
-  return getActive()[ME.id] || [];
-}
-
-function setMyActive(arr) {
-  const o = getActive();
-  o[ME.id] = arr;
-  setActive(o);
-}
-
-function getQueueData() {
-  return CACHE_QUEUE[ME.id] || { current: 0, nextNumber: 0, queue: [], history: [] };
+  window.db.ref('active').set(obj);
 }
 
 function saveQueueData(d) {
   CACHE_QUEUE[ME.id] = d;
-  db.ref('queues/' + ME.id).set(d);
+  window.db.ref('queues/' + ME.id).set(d);
 }
 
 function listenFirebase() {
-  db.ref('active').on('value', function(snap) {
+  window.db.ref('active').on('value', function(snap) {
     CACHE_ACTIVE = snap.val() || {};
     if (ME) renderAll();
   });
 
-  db.ref('queues').on('value', function(snap) {
+  window.db.ref('queues').on('value', function(snap) {
     CACHE_QUEUE = snap.val() || {};
     if (ME) renderAll();
   });
