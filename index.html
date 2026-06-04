@@ -981,12 +981,18 @@ const IC = {
 // ── STATE ─────────────────────────────────────────────────────────────────────
 // vku_active = { staff_id: ['code1','code2',...], ... } — устанавливается сотрудниками
 function getActiveMap() {
-  try { return JSON.parse(localStorage.getItem('vku_active') || '{}'); } catch(e){ return {}; }
+  return {};
 }
-// Все активные коды (плоский список)
+
 function getActivePrograms() {
-  const m = getActiveMap();
-  return [...new Set(Object.values(m).flat())];
+  return [];
+}
+
+function getActiveStaffByCode(code) {
+  if (typeof getStaffByProgram === 'function') {
+    return getStaffByProgram(code);
+  }
+  return null;
 }
 // Найти сотрудника по активному коду
 function getActiveStaffByCode(code) {
