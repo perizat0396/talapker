@@ -1185,7 +1185,7 @@ console.log("Firebase db:", db);
     return;
   }
 
-  alert('Талон создан');
+
 
   const data = snapshot.val();
   const ticket = data.queue[data.queue.length - 1];
@@ -1204,6 +1204,22 @@ console.log("Firebase db:", db);
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+}
+function goStep(step) {
+  if (step === 'level') {
+    S.step = 'level';
+    S.level = null;
+    S.ticket = null;
+    S.search = '';
+  }
+
+  if (step === 'program') {
+    S.step = 'program';
+    S.ticket = null;
+  }
+
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
   render();
 </script>
