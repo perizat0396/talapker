@@ -89,7 +89,6 @@ function listenFirebase() {
   });
 }
 
-listenFirebase();
 
 // ── LEVEL DEFINITIONS ─────────────────────────────────────────────────────────
 const LEVELS_DEF = [
@@ -314,3 +313,6 @@ function toast(msg) {
 let timer = null;
 function startRefresh() { timer = setInterval(function(){ if(ME) renderAll(); }, 3500); }
 function stopRefresh()  { if(timer) clearInterval(timer); }
+
+listenFirebase();
+
