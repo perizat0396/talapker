@@ -1124,7 +1124,7 @@ function selectLevel(id) {
   render(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function selectProgram(code) {
-    alert('Нажата ОП: ' + code);
+
   const p = PROGRAMS[S.level].find(x => x.code === code);
 
   if (!p) {
