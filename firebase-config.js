@@ -1,9 +1,7 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyDw7hWYvtUhNgMy5dUHbKCudKcAw8qbd44",
   authDomain: "talapker-43b91.firebaseapp.com",
+  databaseURL: "https://talapker-43b91-default-rtdb.firebaseio.com",
   projectId: "talapker-43b91",
   storageBucket: "talapker-43b91.firebasestorage.app",
   messagingSenderId: "85928681389",
