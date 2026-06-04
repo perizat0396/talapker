@@ -9,275 +9,350 @@
 <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #f0f4ff;
+  background: #eef2fb;
   min-height: 100vh;
   color: #0f1f4b;
-  overflow-x: hidden;
 }
 
-/* ── HEADER ── */
-.tv-header {
-  background: linear-gradient(135deg, #1a2e8f 0%, #3056D3 60%, #4f75ff 100%);
-  padding: 16px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* ═══ HEADER ═══ */
+.hdr {
+  background: linear-gradient(135deg, #1a2e8f 0%, #3056D3 55%, #4f75ff 100%);
+  padding: 14px 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 20px rgba(48,86,211,.25);
 }
-.tv-logo-row { display: flex; align-items: center; gap: 14px; }
-.tv-logo {
-  width: 52px; height: 52px;
-  background: rgba(255,255,255,.15);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(255,255,255,.2);
-  overflow: hidden;
+.hdr-left { display: flex; align-items: center; gap: 14px; }
+.hdr-logo {
+  width: 50px; height: 50px; border-radius: 12px;
+  background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.25);
+  display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
 }
-.tv-logo img { width: 48px; height: 48px; object-fit: contain; border-radius: 6px; }
-.tv-title-kaz { font-size: 15px; font-weight: 800; color: white; line-height: 1.2; }
-.tv-title-rus { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
-.tv-right { display: flex; align-items: center; gap: 20px; }
-.tv-live {
+.hdr-logo img { width: 46px; height: 46px; object-fit: contain; border-radius: 6px; }
+.hdr-uni-kaz { font-size: 15px; font-weight: 800; color: #fff; line-height: 1.2; }
+.hdr-uni-rus { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
+.hdr-right { display: flex; align-items: center; gap: 18px; }
+.hdr-live {
   display: flex; align-items: center; gap: 7px;
-  background: rgba(5,150,105,.25); border: 1px solid rgba(5,150,105,.5);
-  border-radius: 20px; padding: 6px 14px;
-  font-size: 12px; font-weight: 700; color: #34d399;
+  background: rgba(16,185,129,.2); border: 1px solid rgba(16,185,129,.45);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 11px; font-weight: 800; color: #34d399; letter-spacing: .6px;
 }
-.live-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; animation: blink 1.2s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
-.tv-clock { font-size: 30px; font-weight: 900; color: white; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
-.tv-date { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; text-align: right; }
+.live-dot { width: 7px; height: 7px; background: #34d399; border-radius: 50%; animation: blink 1.1s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+.hdr-clock { font-size: 32px; font-weight: 900; color: #fff; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.hdr-date  { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; text-align: right; }
 
-/* ── GRID ── */
+/* ═══ GRID ═══ */
 .tv-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
-  padding: 28px 32px 100px;
+  padding: 24px 28px 90px;
 }
 
-/* ── CARD ── */
+/* ═══ CARD ═══ */
 .tv-card {
-  background: white;
-  border: 2px solid #e2e8f8;
-  border-radius: 24px;
+  background: #fff;
+  border: 2px solid #dde5f8;
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(48,86,211,.08);
-  transition: border-color .3s, box-shadow .3s;
+  box-shadow: 0 4px 18px rgba(48,86,211,.07);
+  transition: border-color .35s, box-shadow .35s;
 }
 .tv-card.active {
   border-color: #10b981;
-  box-shadow: 0 0 0 4px rgba(16,185,129,.12), 0 8px 30px rgba(16,185,129,.15);
+  box-shadow: 0 0 0 3px rgba(16,185,129,.12), 0 8px 28px rgba(16,185,129,.14);
 }
-.tv-card.just-called { animation: cardFlash .8s ease; }
-@keyframes cardFlash {
-  0%,100% { border-color: #10b981; }
-  50% { border-color: #059669; box-shadow: 0 0 0 8px rgba(16,185,129,.2), 0 8px 40px rgba(16,185,129,.3); }
+.tv-card.just-called { animation: cardPulse .9s ease; }
+@keyframes cardPulse {
+  0%,100% { transform:none; }
+  40% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(16,185,129,.18), 0 12px 40px rgba(16,185,129,.22); }
 }
 
-/* Cabinet header */
-.card-cab-bar {
-  background: linear-gradient(135deg, #3056D3, #4f75ff);
-  padding: 12px 20px;
+/* Cabinet bar */
+.cab-bar {
+  background: linear-gradient(135deg, #2541b2, #3056D3);
+  padding: 13px 18px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.cab-num-kaz { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.7); }
-.cab-num-rus { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 1px; }
-.cab-value { font-size: 26px; font-weight: 900; color: white; letter-spacing: -.5px; }
+.cab-info { display: flex; align-items: center; gap: 10px; }
+.cab-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center;
+}
+.cab-icon svg { width: 18px; height: 18px; color: #fff; }
+.cab-labels .kaz { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .5px; }
+.cab-labels .rus { font-size: 9px; color: rgba(255,255,255,.4); }
+.cab-number { font-size: 30px; font-weight: 900; color: #fff; letter-spacing: -1px; }
 
-/* Current number */
-.card-body {
-  padding: 24px 20px 20px;
-  text-align: center;
+/* Called block */
+.called-block {
+  padding: 20px 18px 14px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1.5px solid #eef2fb;
 }
-.called-label-kaz {
-  font-size: 11px; font-weight: 700; color: #6b7280;
-  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px;
+.called-icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  background: #f0fdf4; border: 1.5px solid #bbf7d0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .3s, border-color .3s;
 }
-.called-label-rus {
-  font-size: 10px; color: #9ca3af;
-  margin-bottom: 14px;
-}
-.ticket-number {
-  font-size: 80px; font-weight: 900; line-height: 1;
-  letter-spacing: -4px;
-  color: #d1d5e8;
-  transition: color .4s, text-shadow .4s;
+.called-icon svg { width: 22px; height: 22px; color: #d1d5e8; transition: color .3s; }
+.tv-card.active .called-icon { background: #dcfce7; border-color: #86efac; }
+.tv-card.active .called-icon svg { color: #059669; }
+
+.called-right { flex: 1; min-width: 0; }
+.called-lbl-kaz { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: .5px; text-transform: uppercase; }
+.called-lbl-rus { font-size: 9px; color: #cbd5e1; margin-top: 1px; }
+.called-num {
+  font-size: 48px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-top: 4px;
+  color: #d1d5e8; transition: color .4s, text-shadow .4s;
   font-variant-numeric: tabular-nums;
 }
-.ticket-number .pfx { font-size: 36px; letter-spacing: 0; }
-.ticket-number.called {
+.called-num .pfx { font-size: 22px; letter-spacing: 0; }
+.tv-card.active .called-num {
   color: #059669;
-  text-shadow: 0 0 40px rgba(5,150,105,.25);
+  text-shadow: 0 0 30px rgba(5,150,105,.2);
   animation: numPop .5s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes numPop { from { transform:scale(.75); opacity:.4; } to { transform:none; opacity:1; } }
+@keyframes numPop { from{transform:scale(.7);opacity:.3;} to{transform:none;opacity:1;} }
 
-.status-row {
+.called-status {
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 6px; font-size: 11px; font-weight: 600;
+}
+.cs-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1d5e8; flex-shrink: 0; }
+.called-status .kaz { color: #94a3b8; }
+.called-status .rus { font-size: 10px; color: #cbd5e1; margin-left: 2px; }
+.tv-card.active .cs-dot { background: #10b981; animation: blink .9s ease-in-out infinite; }
+.tv-card.active .called-status .kaz { color: #059669; }
+.tv-card.active .called-status .rus { color: #34d399; }
+
+/* Queue list */
+.queue-section { padding: 10px 18px 14px; }
+.qs-header {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 8px;
+}
+.qs-icon {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: #eef2fb; display: flex; align-items: center; justify-content: center;
+}
+.qs-icon svg { width: 12px; height: 12px; color: #3056D3; }
+.qs-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; }
+.qs-count {
+  margin-left: auto; font-size: 10px; font-weight: 800;
+  background: #eef2fb; color: #3056D3; border-radius: 6px; padding: 2px 7px;
+}
+
+.q-rows { display: flex; flex-direction: column; gap: 5px; }
+.q-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #f8faff; border: 1.5px solid #e8eef8;
+  border-radius: 10px; padding: 8px 12px;
+  transition: border-color .2s;
+}
+.q-row.next-row {
+  background: #f0f4ff; border-color: #c7d2f8;
+}
+.qr-num {
+  font-size: 16px; font-weight: 900; color: #0f1f4b;
+  font-variant-numeric: tabular-nums; min-width: 44px;
+}
+.q-row.next-row .qr-num { color: #3056D3; }
+.qr-body { flex: 1; min-width: 0; }
+.qr-code { font-size: 9.5px; font-weight: 700; color: #94a3b8; margin-bottom: 1px; }
+.qr-name { font-size: 11px; font-weight: 600; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qr-time { font-size: 10px; color: #94a3b8; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.next-badge {
+  font-size: 8.5px; font-weight: 800; letter-spacing: .4px;
+  background: #eef2fb; color: #3056D3; border-radius: 5px; padding: 2px 6px; flex-shrink: 0;
+}
+
+.q-empty {
+  text-align: center; padding: 10px 0 4px;
+  font-size: 11px; color: #cbd5e1; font-weight: 500;
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 10px; font-size: 12px; font-weight: 600;
 }
-.status-row.called { color: #059669; }
-.status-row.idle { color: #9ca3af; }
-.s-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.status-row.called .s-dot { background: #10b981; animation: blink .9s ease-in-out infinite; }
-.status-row.idle .s-dot { background: #d1d5e8; }
-.status-kaz { font-weight: 700; }
-.status-rus { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.q-empty svg { width: 14px; height: 14px; color: #dde5f8; }
 
-/* ── BIG OVERLAY ── */
-#tv-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 9999;
-  background: rgba(240,244,255,.92);
-  backdrop-filter: blur(12px);
-  align-items: center; justify-content: center;
-  flex-direction: column;
+.q-more {
+  text-align: center; font-size: 10px; color: #94a3b8;
+  font-weight: 600; margin-top: 4px;
+  padding: 5px;
+  background: #f8faff; border-radius: 8px;
 }
-#tv-overlay.show { display: flex; }
 
-.overlay-inner {
-  text-align: center;
-  animation: bannerIn .45s cubic-bezier(.34,1.4,.64,1);
-}
-@keyframes bannerIn { from { transform:scale(.55) translateY(50px); opacity:0; } to { transform:none; opacity:1; } }
-
-.ov-label-kaz {
-  font-size: 22px; font-weight: 800; color: #3056D3;
-  letter-spacing: 1px; margin-bottom: 4px;
-}
-.ov-label-rus {
-  font-size: 16px; color: #6b7280; font-weight: 500;
-  margin-bottom: 28px;
-}
-.ov-number {
-  font-size: clamp(120px, 22vw, 200px);
-  font-weight: 900; line-height: 1; letter-spacing: -8px;
-  color: #059669;
-  text-shadow: 0 0 80px rgba(5,150,105,.3);
-  animation: ovGlow 1.4s ease-in-out infinite;
-}
-@keyframes ovGlow {
-  0%,100% { text-shadow: 0 0 80px rgba(5,150,105,.3); }
-  50%     { text-shadow: 0 0 120px rgba(5,150,105,.5); }
-}
-.ov-number span { font-size: .42em; letter-spacing: -2px; }
-.ov-cab {
-  margin-top: 20px;
-  font-size: 26px; font-weight: 800; color: #0f1f4b;
-}
-.ov-cab b { color: #3056D3; }
-.ov-cab-rus {
-  font-size: 18px; color: #6b7280; font-weight: 500;
-  margin-top: 4px;
-}
-.ov-bar-wrap {
-  margin: 32px auto 0;
-  width: 320px; height: 5px;
-  background: #e2e8f8; border-radius: 3px; overflow: hidden;
-}
-.ov-bar {
-  height: 100%; background: #059669; border-radius: 3px;
-  animation: barFill 5s linear forwards;
-}
-@keyframes barFill { from { width:100%; } to { width:0%; } }
-
-/* ── TICKER ── */
-.tv-ticker {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: white;
-  border-top: 1.5px solid #e2e8f8;
-  padding: 10px 0;
-  height: 44px; overflow: hidden;
-}
-.ticker-track {
-  display: flex; align-items: center; gap: 56px;
-  white-space: nowrap;
-  animation: tickerScroll 35s linear infinite;
-}
-@keyframes tickerScroll { from { transform:translateX(100vw); } to { transform:translateX(-100%); } }
-.ti { font-size: 13px; font-weight: 600; color: #6b7280; display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
-.ti .n { color: #3056D3; font-weight: 800; }
-.ti.c .n { color: #059669; }
-.ti-sep { color: #d1d5e8; font-size: 18px; }
-
-/* no data */
+/* ═══ EMPTY STATE ═══ */
 .tv-empty {
   grid-column: 1/-1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 20px; text-align: center; color: #9ca3af;
+  padding: 80px 20px; text-align: center;
 }
-.tv-empty svg { width: 64px; height: 64px; margin-bottom: 16px; color: #d1d5e8; }
-.tv-empty h2 { font-size: 20px; font-weight: 700; color: #6b7280; margin-bottom: 6px; }
-.tv-empty p { font-size: 14px; }
+.tv-empty-icon {
+  width: 80px; height: 80px; border-radius: 24px;
+  background: #fff; border: 2px solid #dde5f8;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+}
+.tv-empty-icon svg { width: 36px; height: 36px; color: #c7d2f8; }
+.tv-empty h2 { font-size: 20px; font-weight: 800; color: #334155; margin-bottom: 6px; }
+.tv-empty p  { font-size: 13px; color: #94a3b8; }
+
+/* ═══ BIG OVERLAY ═══ */
+#tv-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(238,242,251,.93); backdrop-filter: blur(14px);
+  align-items: center; justify-content: center; flex-direction: column;
+}
+#tv-overlay.show { display: flex; }
+.ov-inner { text-align: center; animation: ovIn .45s cubic-bezier(.34,1.4,.64,1); }
+@keyframes ovIn { from{transform:scale(.5) translateY(60px);opacity:0;} to{transform:none;opacity:1;} }
+
+.ov-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #dcfce7; border: 1.5px solid #86efac;
+  border-radius: 20px; padding: 8px 20px; margin-bottom: 20px;
+}
+.ov-badge svg { width: 18px; height: 18px; color: #059669; }
+.ov-badge-kaz { font-size: 15px; font-weight: 800; color: #059669; }
+.ov-badge-rus { font-size: 12px; color: #34d399; margin-left: 2px; }
+
+.ov-num {
+  font-size: clamp(110px, 20vw, 190px); font-weight: 900; line-height: 1; letter-spacing: -8px;
+  color: #059669; text-shadow: 0 0 80px rgba(5,150,105,.25);
+  animation: ovGlow 1.4s ease-in-out infinite;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes ovGlow {
+  0%,100%{text-shadow:0 0 80px rgba(5,150,105,.25);}
+  50%    {text-shadow:0 0 120px rgba(5,150,105,.45);}
+}
+.ov-num span { font-size: .42em; letter-spacing: -2px; }
+
+.ov-cab-row {
+  margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.ov-cab-icon {
+  width: 44px; height: 44px; background: #dcfce7; border: 1.5px solid #86efac;
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+}
+.ov-cab-icon svg { width: 22px; height: 22px; color: #059669; }
+.ov-cab-text-kaz { font-size: 22px; font-weight: 900; color: #0f1f4b; letter-spacing: -.5px; }
+.ov-cab-text-rus { font-size: 15px; color: #64748b; font-weight: 500; margin-top: 2px; }
+
+.ov-bar-wrap { margin: 28px auto 0; width: 300px; height: 4px; background: #dde5f8; border-radius: 2px; overflow: hidden; }
+.ov-bar { height: 100%; background: #059669; border-radius: 2px; animation: barFill 5s linear forwards; }
+@keyframes barFill { from{width:100%;} to{width:0%;} }
+
+/* ═══ TICKER ═══ */
+.ticker {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 44px;
+  background: #fff; border-top: 1.5px solid #dde5f8; overflow: hidden;
+  display: flex; align-items: center;
+}
+.ticker-track {
+  display: flex; align-items: center; gap: 48px;
+  white-space: nowrap;
+  animation: tickerMove 38s linear infinite;
+}
+@keyframes tickerMove { from{transform:translateX(100vw);} to{transform:translateX(-100%);} }
+.ti { font-size: 13px; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.ti svg { width: 14px; height: 14px; flex-shrink: 0; }
+.ti .n  { color: #3056D3; font-weight: 800; }
+.ti.c .n { color: #059669; }
+.ti.c svg { color: #10b981; }
+.ti-sep { color: #c7d2f8; font-size: 20px; line-height: 1; }
 </style>
 </head>
 <body>
 
-<header class="tv-header">
-  <div class="tv-logo-row">
-    <div class="tv-logo">
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo">
       <img src="logo.png" alt="ВКУ" onerror="this.style.display='none'">
     </div>
     <div>
-      <div class="tv-title-kaz">Шығыс Қазақстан университеті</div>
-      <div class="tv-title-rus">Восточно-Казахстанский университет им. Аманжолова</div>
+      <div class="hdr-uni-kaz">Шығыс Қазақстан университеті</div>
+      <div class="hdr-uni-rus">Восточно-Казахстанский университет им. Аманжолова</div>
     </div>
   </div>
-  <div class="tv-right">
-    <div class="tv-live"><div class="live-dot"></div>LIVE</div>
+  <div class="hdr-right">
+    <div class="hdr-live"><div class="live-dot"></div>LIVE</div>
     <div>
-      <div class="tv-clock" id="tv-clock">00:00</div>
-      <div class="tv-date" id="tv-date">—</div>
+      <div class="hdr-clock" id="tv-clock">00:00</div>
+      <div class="hdr-date"  id="tv-date">—</div>
     </div>
   </div>
 </header>
 
+<!-- GRID -->
 <div class="tv-grid" id="tv-grid">
   <div class="tv-empty">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    <div class="tv-empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </div>
     <h2>Жүктелуде... / Загрузка...</h2>
     <p>Firebase-қа қосылу / Подключение к Firebase</p>
   </div>
 </div>
 
-<div class="tv-ticker"><div class="ticker-track" id="ticker-track">
-  <span class="ti">Деректер күтілуде / Ожидание данных</span>
+<!-- TICKER -->
+<div class="ticker"><div class="ticker-track" id="ticker-track">
+  <span class="ti">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Деректер күтілуде / Ожидание данных
+  </span>
 </div></div>
 
 <!-- BIG OVERLAY -->
 <div id="tv-overlay">
-  <div class="overlay-inner">
-    <div class="ov-label-kaz">📢 Шақырылуда</div>
-    <div class="ov-label-rus">Вызывается</div>
-    <div class="ov-number" id="ov-num"><span>B-</span>001</div>
-    <div class="ov-cab" id="ov-cab">Кабинет / <b>Кабинет 101</b></div>
-    <div class="ov-cab-rus" id="ov-cab-rus"></div>
+  <div class="ov-inner">
+    <div class="ov-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      <span class="ov-badge-kaz">Шақырылуда</span>
+      <span class="ov-badge-rus">/ Вызывается</span>
+    </div>
+    <div class="ov-num" id="ov-num"><span>B-</span>001</div>
+    <div class="ov-cab-row">
+      <div class="ov-cab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div>
+        <div class="ov-cab-text-kaz" id="ov-cab-kaz">Кабинет 101</div>
+        <div class="ov-cab-text-rus" id="ov-cab-rus">1 этаж</div>
+      </div>
+    </div>
     <div class="ov-bar-wrap"><div class="ov-bar" id="ov-bar"></div></div>
   </div>
 </div>
 
 <script>
-let QUEUES = {};
-let ACTIVE = {};
-let overlayTimer = null;
+let QUEUES = {}, ACTIVE = {}, overlayTimer = null;
 
-// Clock
+/* ── ICONS ── */
+const SVG = {
+  door: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1" fill="currentColor" stroke="none"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>',
+};
+
+/* ── CLOCK ── */
 function updateClock() {
-  const now = new Date();
-  document.getElementById('tv-clock').textContent =
-    now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('tv-date').textContent =
-    now.toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'long'});
+  const n = new Date();
+  document.getElementById('tv-clock').textContent = n.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('tv-date').textContent  = n.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
 }
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClock, 1000); updateClock();
 
+/* ── HELPERS ── */
 function getPrefix(staff) {
   if (!staff || !staff.programs || !staff.programs.length) return 'S';
   const c = staff.programs[0];
@@ -287,6 +362,7 @@ function getPrefix(staff) {
   return 'B';
 }
 
+/* ── FIREBASE ── */
 window.addEventListener('DOMContentLoaded', function() {
   if (!window.db) return;
 
@@ -296,75 +372,55 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 
   window.db.ref('queues').on('value', function(snap) {
-    const newQ = snap.val() || {};
-
-    Object.keys(newQ).forEach(function(id) {
-      const newCur = newQ[id] ? newQ[id].current : 0;
-      const oldCur = QUEUES[id] ? QUEUES[id].current : 0;
-      if (newCur && newCur !== oldCur) {
+    const nq = snap.val() || {};
+    Object.keys(nq).forEach(function(id) {
+      const nc = nq[id] ? nq[id].current : 0;
+      const oc = QUEUES[id] ? QUEUES[id].current : 0;
+      if (nc && nc !== oc) {
         const staff = typeof STAFF_CONFIG !== 'undefined'
           ? STAFF_CONFIG.find(function(s){ return s.id === id; }) : null;
-        showOverlay(id, newCur, staff);
+        showOverlay(nc, staff);
         setTimeout(function() {
-          const el = document.getElementById('card-' + id);
+          var el = document.getElementById('card-' + id);
           if (el) { el.classList.add('just-called'); setTimeout(function(){ el.classList.remove('just-called'); }, 900); }
         }, 80);
       }
     });
-
-    QUEUES = newQ;
+    QUEUES = nq;
     renderGrid();
   });
 });
 
-function showOverlay(staffId, number, staff) {
+/* ── OVERLAY ── */
+function showOverlay(number, staff) {
   if (overlayTimer) clearTimeout(overlayTimer);
-
-  const prefix = getPrefix(staff);
-  const numStr = String(number).padStart(3,'0');
-
-  document.getElementById('ov-num').innerHTML = '<span>' + prefix + '-</span>' + numStr;
-  document.getElementById('ov-cab').innerHTML =
-    'Кабинет <b>' + (staff ? staff.cabinet : '—') + '</b>';
-  document.getElementById('ov-cab-rus').textContent =
-    staff ? staff.floor : '';
-
-  // Reset bar animation
+  const pfx = getPrefix(staff);
+  document.getElementById('ov-num').innerHTML = '<span>' + pfx + '-</span>' + String(number).padStart(3,'0');
+  document.getElementById('ov-cab-kaz').textContent = 'Кабинет ' + (staff ? staff.cabinet : '—');
+  document.getElementById('ov-cab-rus').textContent = staff ? staff.floor : '';
   const bar = document.getElementById('ov-bar');
-  bar.style.animation = 'none';
-  bar.offsetHeight;
-  bar.style.animation = '';
-
+  bar.style.animation = 'none'; bar.offsetHeight; bar.style.animation = '';
   document.getElementById('tv-overlay').classList.add('show');
-
-  // Sound
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 250, 500].forEach(function(d) {
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.connect(g); g.connect(ctx.destination);
-      osc.frequency.value = d === 500 ? 1046 : 880;
+    [0, 260, 520].forEach(function(d) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = d === 520 ? 1047 : 880;
       g.gain.setValueAtTime(0.35, ctx.currentTime + d/1000);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d/1000 + 0.4);
-      osc.start(ctx.currentTime + d/1000);
-      osc.stop(ctx.currentTime + d/1000 + 0.5);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d/1000 + 0.42);
+      o.start(ctx.currentTime + d/1000); o.stop(ctx.currentTime + d/1000 + 0.5);
     });
-  } catch(e) {}
-
-  overlayTimer = setTimeout(function() {
-    document.getElementById('tv-overlay').classList.remove('show');
-  }, 5000);
+  } catch(e){}
+  overlayTimer = setTimeout(function(){ document.getElementById('tv-overlay').classList.remove('show'); }, 5000);
 }
-
 document.getElementById('tv-overlay').addEventListener('click', function() {
-  clearTimeout(overlayTimer);
-  this.classList.remove('show');
+  clearTimeout(overlayTimer); this.classList.remove('show');
 });
 
+/* ── RENDER ── */
 function renderGrid() {
   if (typeof STAFF_CONFIG === 'undefined') return;
-
   const visible = STAFF_CONFIG.filter(function(s) {
     return (ACTIVE[s.id] && ACTIVE[s.id].length > 0) ||
            (QUEUES[s.id] && (QUEUES[s.id].queue || []).length > 0);
@@ -373,72 +429,117 @@ function renderGrid() {
   if (!visible.length) {
     document.getElementById('tv-grid').innerHTML =
       '<div class="tv-empty">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' +
-        '<h2>Қабылдау басталмады</h2>' +
-        '<p>Приём ещё не начался</p>' +
+        '<div class="tv-empty-icon">' + SVG.clock + '</div>' +
+        '<h2>Қабылдау басталмады</h2><p>Приём ещё не начался</p>' +
       '</div>';
     updateTicker([]);
     return;
   }
-
   document.getElementById('tv-grid').innerHTML = visible.map(buildCard).join('');
   updateTicker(visible);
 }
 
 function buildCard(staff) {
-  const data  = QUEUES[staff.id] || {};
-  const cur   = data.current || 0;
-  const prefix = getPrefix(staff);
+  const data   = QUEUES[staff.id] || {};
+  const cur    = data.current || 0;
+  const queue  = (data.queue || []).filter(function(q){ return !q.called; });
+  const pfx    = getPrefix(staff);
   const hasCur = cur > 0;
 
-  return '<div class="tv-card' + (hasCur ? ' active' : '') + '" id="card-' + staff.id + '">' +
-    '<div class="card-cab-bar">' +
-      '<div>' +
-        '<div class="cab-num-kaz">Кабинет / Кабинет</div>' +
-        '<div class="cab-num-rus">' + staff.floor + '</div>' +
-      '</div>' +
-      '<div class="cab-value">' + staff.cabinet + '</div>' +
-    '</div>' +
-    '<div class="card-body">' +
-      '<div class="called-label-kaz">Шақырылған нөмір</div>' +
-      '<div class="called-label-rus">Вызванный номер</div>' +
-      '<div class="ticket-number' + (hasCur ? ' called' : '') + '">' +
-        (hasCur
-          ? '<span class="pfx">' + prefix + '-</span>' + String(cur).padStart(3,'0')
-          : '—') +
-      '</div>' +
-      '<div class="status-row ' + (hasCur ? 'called' : 'idle') + '">' +
-        '<div class="s-dot"></div>' +
-        '<div>' +
-          '<div class="status-kaz">' + (hasCur ? 'Шақырылды' : 'Күту') + '</div>' +
-          '<div class="status-rus">' + (hasCur ? 'Вызван' : 'Ожидание') + '</div>' +
+  /* called block */
+  const calledHTML =
+    '<div class="called-block">' +
+      '<div class="called-icon">' + SVG.bell + '</div>' +
+      '<div class="called-right">' +
+        '<div class="called-lbl-kaz">Шақырылған нөмір</div>' +
+        '<div class="called-lbl-rus">Вызванный номер</div>' +
+        '<div class="called-num">' +
+          (hasCur
+            ? '<span class="pfx">' + pfx + '-</span>' + String(cur).padStart(3,'0')
+            : '<span style="font-size:28px;letter-spacing:0;color:#d1d5e8">—</span>') +
+        '</div>' +
+        '<div class="called-status">' +
+          '<div class="cs-dot"></div>' +
+          '<span class="kaz">' + (hasCur ? 'Шақырылды' : 'Күту') + '</span>' +
+          '<span class="rus">/ ' + (hasCur ? 'Вызван' : 'Ожидание') + '</span>' +
         '</div>' +
       '</div>' +
+    '</div>';
+
+  /* queue rows */
+  let qHTML = '';
+  if (!queue.length) {
+    qHTML = '<div class="q-empty">' + SVG.inbox + ' Күту жоқ / Очередь пуста</div>';
+  } else {
+    qHTML = '<div class="q-rows">' +
+      queue.slice(0, 5).map(function(q, i) {
+        return '<div class="q-row' + (i===0?' next-row':'') + '">' +
+          '<div class="qr-num">' + String(q.number).padStart(3,'0') + '</div>' +
+          '<div class="qr-body">' +
+            '<div class="qr-code">' + q.code + '</div>' +
+            '<div class="qr-name">' + q.name + '</div>' +
+          '</div>' +
+          '<div class="qr-time">' + (q.time||'') + '</div>' +
+          (i===0 ? '<span class="next-badge">КЕЛЕСІ</span>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>';
+    if (queue.length > 5) {
+      qHTML += '<div class="q-more">+ тағы ' + (queue.length-5) + ' / ещё ' + (queue.length-5) + ' чел.</div>';
+    }
+  }
+
+  const queueSection =
+    '<div class="queue-section">' +
+      '<div class="qs-header">' +
+        '<div class="qs-icon">' + SVG.users + '</div>' +
+        '<span class="qs-title">Күтуде / В очереди</span>' +
+        '<span class="qs-count">' + queue.length + '</span>' +
+      '</div>' +
+      qHTML +
+    '</div>';
+
+  return '<div class="tv-card' + (hasCur?' active':'') + '" id="card-' + staff.id + '">' +
+    '<div class="cab-bar">' +
+      '<div class="cab-info">' +
+        '<div class="cab-icon">' + SVG.door + '</div>' +
+        '<div class="cab-labels">' +
+          '<div class="kaz">Кабинет / Кабинет</div>' +
+          '<div class="rus">' + staff.floor + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cab-number">' + staff.cabinet + '</div>' +
     '</div>' +
+    calledHTML +
+    queueSection +
   '</div>';
 }
 
+/* ── TICKER ── */
 function updateTicker(staffList) {
   const items = [];
   staffList.forEach(function(s) {
     const d = QUEUES[s.id] || {};
-    const cur = d.current || 0;
+    const c = d.current || 0;
     const pfx = getPrefix(s);
-    if (cur) {
-      items.push('<span class="ti c"><span class="n">📢 ' + pfx + '-' + String(cur).padStart(3,'0') + '</span> → Кабинет ' + s.cabinet + '</span>');
-    }
+    if (c) items.push(
+      '<span class="ti c">' + SVG.bell +
+        '<span class="n">📢 ' + pfx + '-' + String(c).padStart(3,'0') + '</span>' +
+        '→ Кабинет ' + s.cabinet +
+      '</span>'
+    );
     const w = (d.queue||[]).filter(function(q){ return !q.called; }).length;
-    if (w > 0) {
-      items.push('<span class="ti"><span class="n">Каб. ' + s.cabinet + '</span>: ' + w + ' күтуде / ожидает</span>');
-    }
+    if (w) items.push(
+      '<span class="ti">' + SVG.users +
+        '<span class="n">Каб. ' + s.cabinet + '</span>' +
+        ': ' + w + ' күтуде / ожидает' +
+      '</span>'
+    );
   });
-
-  if (!items.length) items.push('<span class="ti">Белсенді шақырулар жоқ / Активных вызовов нет</span>');
-
+  if (!items.length) items.push('<span class="ti">' + SVG.clock + ' Белсенді шақырулар жоқ / Активных вызовов нет</span>');
   const sep = '<span class="ti-sep">·</span>';
-  const track = document.getElementById('ticker-track');
   const inner = items.join(sep);
-  track.innerHTML = inner + sep + inner;
+  document.getElementById('ticker-track').innerHTML = inner + sep + inner;
 }
 </script>
 </body>
