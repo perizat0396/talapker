@@ -11,3 +11,5 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+databaseURL: "https://talapker-43b91-default-rtdb.firebaseio.com",
