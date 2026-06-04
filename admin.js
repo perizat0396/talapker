@@ -100,11 +100,9 @@ const LEVELS_DEF = [
 ];
 
 function getMyPrograms() {
-  if (typeof PROGRAMS === 'undefined')
-    return ME.programs.map(c => ({ code:c, name:c, ip:false }));
-  const flat = Object.values(PROGRAMS).flat();
-  const map  = Object.fromEntries(flat.map(p => [p.code, p]));
-  return ME.programs.map(code => map[code] || { code, name:code, ip:false });
+  if (typeof PROGRAMS === 'undefined') return [];
+
+  return Object.values(PROGRAMS).flat();
 }
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
