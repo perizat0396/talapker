@@ -1125,18 +1125,29 @@ function selectLevel(id) {
 }
 function selectProgram(code) {
   const p = PROGRAMS[S.level].find(x => x.code === code);
-  const staff = (typeof getStaffByProgram === 'function') ? getStaffByProgram(code) : null;
+
+  if (!p) {
+    alert('ОП не найдена');
+    return;
+  }
+
+  const staff = getStaffByProgram(code);
 
   if (!staff) {
-    alert('Для этой программы не найден сотрудник');
+    alert('Для этой ОП не назначен сотрудник. Проверьте staff-config.js');
     return;
   }
 
   const queueRef = db.ref('queues/' + staff.id);
 
   queueRef.transaction(function(data) {
-    if (data === null) {
-      data = { current: 0, nextNumber: 0, queue: [], history: [] };
+    if (!data) {
+      data = {
+        current: 0,
+        nextNumber: 0,
+        queue: [],
+        history: []
+      };
     }
 
     if (!data.queue) data.queue = [];
@@ -1145,7 +1156,7 @@ function selectProgram(code) {
 
     data.nextNumber += 1;
 
-    const ticket = {
+    data.queue.push({
       number: data.nextNumber,
       code: p.code,
       name: p.name,
@@ -1154,22 +1165,21 @@ function selectProgram(code) {
         minute: '2-digit'
       }),
       called: false
-    };
-
-    data.queue.push(ticket);
+    });
 
     return data;
   }, function(error, committed, snapshot) {
     if (error || !committed) {
-      alert('Ошибка при создании талона');
+      alert('Ошибка Firebase. Талон не создан.');
+      console.error(error);
       return;
     }
 
     const data = snapshot.val();
-    const lastTicket = data.queue[data.queue.length - 1];
+    const ticket = data.queue[data.queue.length - 1];
 
     S.ticket = {
-      number: lastTicket.number,
+      number: ticket.number,
       before: data.queue.filter(q => !q.called).length - 1,
       code: p.code,
       name: p.name,
@@ -1183,25 +1193,6 @@ function selectProgram(code) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
-
-function goStep(step) {
-  if (step === 'level') {
-    S.step = 'level';
-    S.level = null;
-    S.ticket = null;
-    S.search = '';
-  }
-
-  if (step === 'program') {
-    S.step = 'program';
-    S.ticket = null;
-  }
-
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-render();
 </script>
 </body>
 </html>
