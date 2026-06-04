@@ -1169,30 +1169,37 @@ function selectProgram(code) {
     });
 
     return data;
-  }, function(error, committed, snapshot) {
-    if (error || !committed) {
-      alert('Ошибка Firebase. Талон не создан.');
-      console.error(error);
-      return;
-    }
+ }, function(error, committed, snapshot) {
+  if (error) {
+    alert('Firebase ошибка: ' + error.message);
+    console.error(error);
+    return;
+  }
 
-    const data = snapshot.val();
-    const ticket = data.queue[data.queue.length - 1];
+  if (!committed) {
+    alert('Запись не сохранена');
+    return;
+  }
 
-    S.ticket = {
-      number: ticket.number,
-      before: data.queue.filter(q => !q.called).length - 1,
-      code: p.code,
-      name: p.name,
-      cabinet: staff.cabinet,
-      floor: staff.floor,
-      staffId: staff.id
-    };
+  alert('Талон создан');
 
-    S.step = 'ticket';
-    render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  const data = snapshot.val();
+  const ticket = data.queue[data.queue.length - 1];
+
+  S.ticket = {
+    number: ticket.number,
+    before: data.queue.filter(q => !q.called).length - 1,
+    code: p.code,
+    name: p.name,
+    cabinet: staff.cabinet,
+    floor: staff.floor,
+    staffId: staff.id
+  };
+
+  S.step = 'ticket';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 }
   render();
 </script>
