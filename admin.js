@@ -45,12 +45,30 @@ function logout() {
 }
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
-// ── STORAGE ───────────────────────────────────────────────────────────────────
-let CACHE_QUEUE = {};
+let CACHE_QUEUE  = {};
 let CACHE_ACTIVE = {};
 
-function getActive() {
-  return CACHE_ACTIVE || {};
+// Данные очереди текущего сотрудника
+function getQueueData() {
+  if (!ME) return { current: 0, nextNumber: 0, queue: [], history: [] };
+  const d = CACHE_QUEUE[ME.id];
+  if (!d) return { current: 0, nextNumber: 0, queue: [], history: [] };
+  if (!d.queue)   d.queue   = [];
+  if (!d.history) d.history = [];
+  return d;
+}
+
+// Активные ОП текущего сотрудника (массив кодов)
+function getMyActive() {
+  if (!ME) return [];
+  const active = CACHE_ACTIVE[ME.id];
+  return Array.isArray(active) ? active : [];
+}
+
+function setMyActive(arr) {
+  if (!ME) return;
+  CACHE_ACTIVE[ME.id] = arr;
+  window.db.ref('active/' + ME.id).set(arr);
 }
 
 function setActive(obj) {
@@ -84,10 +102,11 @@ const LEVELS_DEF = [
   { id:'college',  label:'Высший колледж', prefix:'K', color:'#d97706' },
 ];
 
+// Только программы текущего сотрудника (из staff-config.js → programs.js)
 function getMyPrograms() {
-  if (typeof PROGRAMS === 'undefined') return [];
-
-  return Object.values(PROGRAMS).flat();
+  if (!ME || typeof PROGRAMS === 'undefined') return [];
+  const allProgs = Object.values(PROGRAMS).flat();
+  return allProgs.filter(p => ME.programs.includes(p.code));
 }
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
@@ -301,4 +320,3 @@ function startRefresh() { timer = setInterval(function(){ if(ME) renderAll(); },
 function stopRefresh()  { if(timer) clearInterval(timer); }
 
 listenFirebase();
-
