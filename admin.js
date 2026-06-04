@@ -45,24 +45,51 @@ function logout() {
 }
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+let CACHE_QUEUE = {};
+let CACHE_ACTIVE = {};
+
 function getActive() {
-  try { return JSON.parse(localStorage.getItem('vku_active') || '{}'); } catch(e){ return {}; }
+  return CACHE_ACTIVE || {};
 }
-function setActive(obj) { localStorage.setItem('vku_active', JSON.stringify(obj)); }
-function getMyActive()  { return getActive()[ME.id] || []; }
-function setMyActive(arr) { const o=getActive(); o[ME.id]=arr; setActive(o); }
+
+function setActive(obj) {
+  CACHE_ACTIVE = obj;
+  db.ref('active').set(obj);
+}
+
+function getMyActive() {
+  return getActive()[ME.id] || [];
+}
+
+function setMyActive(arr) {
+  const o = getActive();
+  o[ME.id] = arr;
+  setActive(o);
+}
 
 function getQueueData() {
-  try {
-    const q = JSON.parse(localStorage.getItem('vku_queue') || '{}');
-    return q[ME.id] || { current:0, queue:[], history:[] };
-  } catch(e){ return { current:0, queue:[], history:[] }; }
+  return CACHE_QUEUE[ME.id] || { current: 0, nextNumber: 0, queue: [], history: [] };
 }
+
 function saveQueueData(d) {
-  const q = JSON.parse(localStorage.getItem('vku_queue') || '{}');
-  q[ME.id] = d;
-  localStorage.setItem('vku_queue', JSON.stringify(q));
+  CACHE_QUEUE[ME.id] = d;
+  db.ref('queues/' + ME.id).set(d);
 }
+
+function listenFirebase() {
+  db.ref('active').on('value', function(snap) {
+    CACHE_ACTIVE = snap.val() || {};
+    if (ME) renderAll();
+  });
+
+  db.ref('queues').on('value', function(snap) {
+    CACHE_QUEUE = snap.val() || {};
+    if (ME) renderAll();
+  });
+}
+
+listenFirebase();
 
 // ── LEVEL DEFINITIONS ─────────────────────────────────────────────────────────
 const LEVELS_DEF = [
