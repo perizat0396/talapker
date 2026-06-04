@@ -1,18 +1,15 @@
-// ═══════════════════════════════════════════════════════════════
-//  ВСТАВЬТЕ ВАШИ ДАННЫЕ FIREBASE СЮДА
-//  Firebase Console → Project Settings → Your apps → SDK setup
-// ═══════════════════════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey:            "ВАШ_API_KEY",
-  authDomain:        "ВАШ_PROJECT.firebaseapp.com",
-  databaseURL:       "https://ВАШ_PROJECT-default-rtdb.firebaseio.com",
-  projectId:         "ВАШ_PROJECT",
-  storageBucket:     "ВАШ_PROJECT.appspot.com",
-  messagingSenderId: "ВАШИ_ЦИФРЫ",
-  appId:             "ВАШ_APP_ID"
+  apiKey: "AIzaSyDw7hWYvtUhNgMy5dUHbKCudKcAw8qbd44",
+  authDomain: "talapker-43b91.firebaseapp.com",
+  projectId: "talapker-43b91",
+  storageBucket: "talapker-43b91.firebasestorage.app",
+  messagingSenderId: "85928681389",
+  appId: "1:85928681389:web:f8aa81d09e2502c3af0b24",
+  measurementId: "G-XBVGNHMR9F"
 };
 
-// Инициализация (не трогайте)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
