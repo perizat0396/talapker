@@ -101,7 +101,7 @@ body::after {
 
 .logo-box {
   flex-shrink: 0;
-  width: 56px; height: 56px;
+  width: 72px; height: 72px;
   background: rgba(255,255,255,.15);
   backdrop-filter: blur(10px);
   border: 1.5px solid rgba(255,255,255,.25);
@@ -113,14 +113,14 @@ body::after {
 
 .header-titles { flex: 1; min-width: 0; }
 .header-titles .uni-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: white;
   line-height: 1.2;
   letter-spacing: -.2px;
 }
 .header-titles .uni-sub {
-  font-size: 11px;
+  font-size: 17px;
   color: rgba(255,255,255,.65);
   margin-top: 3px;
   line-height: 1.35;
@@ -754,7 +754,7 @@ body::after {
     <div class="logo-box">
       <!-- ЛОГОТИП: замените ССЫЛКУ_НА_ФОТО на реальный URL изображения -->
       <img src="logo.png" alt="ВКУ логотип"
-           style="width:44px;height:44px;object-fit:contain;border-radius:8px"
+           style="width:62px;height:62px;object-fit:contain;border-radius:8px"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
       />
       <!-- Запасной вариант если фото не загрузилось -->
@@ -772,8 +772,8 @@ body::after {
   </div>
   <div class="lang-bar">
     <div class="lang-switcher">
-      <button class="lang-btn" onclick="setLang('kaz')" id="btn-kaz">ҚАЗ</button>
-      <button class="lang-btn active" onclick="setLang('rus')" id="btn-rus">РУС</button>
+      <button class="lang-btn active" onclick="setLang('kaz')" id="btn-kaz">ҚАЗ</button>
+      <button class="lang-btn" onclick="setLang('rus')" id="btn-rus">РУС</button>
       <button class="lang-btn" onclick="setLang('eng')" id="btn-eng">ENG</button>
     </div>
   </div>
@@ -846,7 +846,7 @@ const T = {
     pcount:['programs','programs','programs','soon'],
   }
 };
-let lang = 'rus';
+let lang = 'kaz';
 const t = k => T[lang][k];
 
 function setLang(l) {
