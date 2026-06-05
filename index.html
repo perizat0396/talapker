@@ -1317,6 +1317,16 @@ console.log("Firebase db:", db);
   };
 
   S.step = 'ticket';
+
+  // Save to sessionStorage — persists on refresh, cleared on new tab/scan
+  try {
+    sessionStorage.setItem('talapker_session', JSON.stringify({
+      ticket: S.ticket,
+      level: S.level,
+      step: 'ticket'
+    }));
+  } catch(e) {}
+
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -1327,6 +1337,8 @@ function goStep(step) {
     S.level = null;
     S.ticket = null;
     S.search = '';
+    // Clear session — user consciously returned to home
+    try { sessionStorage.removeItem('talapker_session'); } catch(e) {}
   }
 
   if (step === 'program') {
@@ -1337,6 +1349,19 @@ function goStep(step) {
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+// ── RESTORE SESSION ON REFRESH ──────────────────────────────────────────────
+try {
+  const saved = sessionStorage.getItem('talapker_session');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    if (parsed && parsed.ticket && parsed.level) {
+      S.ticket = parsed.ticket;
+      S.level  = parsed.level;
+      S.step   = 'ticket';
+    }
+  }
+} catch(e) {}
+
   setLang('kaz');
 
 
