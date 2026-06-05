@@ -323,6 +323,9 @@ function recallCurrent() {
 function resetQ() {
   if (!confirm('Сбросить очередь?')) return;
   saveQueueData({ current:0, queue:[], history:[] });
+  // Also reset global counter only if this is the last active staff
+  // (simple approach: always reset counter on manual queue reset)
+  if (window.db) window.db.ref('meta/globalCounter').set(0);
   renderAll();
   toast('Очередь сброшена');
 }
@@ -347,11 +350,13 @@ function doAutoReset() {
     const all = snap.val() || {};
     const updates = {};
     Object.keys(all).forEach(function(id) {
-      updates[id] = { current: 0, nextNumber: 0, queue: [], history: [] };
+      updates[id] = { current: 0, queue: [], history: [] };
     });
     window.db.ref('queues').set(updates);
   });
   window.db.ref('active').set({});
+  // Reset global ticket counter for the new day
+  window.db.ref('meta/globalCounter').set(0);
   window.db.ref('meta/lastResetDate').set(todayStr());
   toast('🔄 Жаңа күн — деректер тазартылды / Новый день — данные сброшены');
 }
