@@ -1259,56 +1259,47 @@ console.log("Firebase db:", db);
   }
 
   console.log("Сотрудник:", staff);
-  const queueRef = db.ref('queues/' + staff.id);
 
-  queueRef.transaction(function(data) {
-    if (!data) {
-      data = {
-        current: 0,
-        nextNumber: 0,
-        queue: [],
-        history: []
-      };
+  // Step 1: Get next global ticket number atomically
+  db.ref('meta/globalCounter').transaction(function(cur) {
+    return (cur || 0) + 1;
+  }, function(error, committed, snap) {
+    if (error || !committed) {
+      alert('Firebase ошибка: ' + (error ? error.message : 'не сохранено'));
+      return;
     }
 
-    if (!data.queue) data.queue = [];
-    if (!data.history) data.history = [];
-    if (!data.nextNumber) data.nextNumber = 0;
+    const globalNumber = snap.val();
+    const timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-    data.nextNumber += 1;
+    // Step 2: Add ticket with global number to staff queue
+    const queueRef = db.ref('queues/' + staff.id);
+    queueRef.transaction(function(data) {
+      if (!data) data = { current: 0, queue: [], history: [] };
+      if (!data.queue)   data.queue   = [];
+      if (!data.history) data.history = [];
 
-    data.queue.push({
-      number: data.nextNumber,
-      code: p.code,
-      name: p.name,
-      time: new Date().toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      called: false
-    });
+      data.queue.push({
+        number: globalNumber,
+        code:   p.code,
+        name:   p.name,
+        time:   timeStr,
+        called: false
+      });
 
-    return data;
- }, function(error, committed, snapshot) {
-  if (error) {
-    alert('Firebase ошибка: ' + error.message);
-    console.error(error);
-    return;
-  }
+      return data;
+    }, function(err, ok, snapshot) {
+      if (err || !ok) {
+        alert('Firebase ошибка при записи в очередь');
+        return;
+      }
 
-  if (!committed) {
-    alert('Запись не сохранена');
-    return;
-  }
-
-
-
-  const data = snapshot.val();
-  const ticket = data.queue[data.queue.length - 1];
+      const data = snapshot.val();
+      const waiting = (data.queue || []).filter(function(q) { return !q.called; });
 
   S.ticket = {
-    number: ticket.number,
-    before: data.queue.filter(q => !q.called).length - 1,
+    number: globalNumber,
+    before: waiting.length - 1,
     code: p.code,
     name: p.name,
     cabinet: staff.cabinet,
@@ -1324,12 +1315,13 @@ console.log("Firebase db:", db);
       ticket: S.ticket,
       level: S.level,
       step: 'ticket'
-    }));
-  } catch(e) {}
+      }));
+      } catch(e) {}
 
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }); // end queueRef.transaction
+  }); // end globalCounter.transaction
 }
 function goStep(step) {
   if (step === 'level') {
