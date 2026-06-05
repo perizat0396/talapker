@@ -44,6 +44,7 @@ body {
 }
 .live-dot { width: 7px; height: 7px; background: #34d399; border-radius: 50%; animation: blink 1.1s ease-in-out infinite; }
 @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+@keyframes soundPulse { 0%,100%{opacity:.8;} 50%{opacity:1; box-shadow:0 0 0 4px rgba(255,255,255,.1);} }
 .hdr-clock { font-size: 32px; font-weight: 900; color: #fff; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
 .hdr-date  { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; text-align: right; }
 
@@ -285,6 +286,26 @@ body {
     </div>
   </div>
   <div class="hdr-right">
+    <!-- Sound unlock button — click once to enable audio -->
+    <button id="sound-btn" onclick="unlockAudio()" title="Дыбысты қосу / Включить звук" style="
+      display:flex; align-items:center; gap:7px; cursor:pointer;
+      background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25);
+      border-radius:12px; padding:8px 14px; color:rgba(255,255,255,.8);
+      font-family:inherit; font-size:12px; font-weight:700;
+      animation: soundPulse 2s ease-in-out infinite;
+    ">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      Дыбыс / Звук
+    </button>
+    <button id="sound-btn-on" style="
+      display:none; align-items:center; gap:7px;
+      background:rgba(16,185,129,.2); border:1.5px solid rgba(16,185,129,.45);
+      border-radius:12px; padding:8px 14px; color:#34d399;
+      font-family:inherit; font-size:12px; font-weight:700; cursor:default;
+    ">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+      Дыбыс қосылды
+    </button>
     <div class="hdr-live"><div class="live-dot"></div>LIVE</div>
     <div>
       <div class="hdr-clock" id="tv-clock">00:00</div>
@@ -349,6 +370,56 @@ const SVG = {
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let QUEUES = {}, ACTIVE = {}, overlayTimer = null;
+
+// ── AUDIO ──────────────────────────────────────────────────────────────────
+let audioCtx = null;
+let audioUnlocked = false;
+
+function unlockAudio() {
+  if (audioUnlocked) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Play a silent buffer to fully unlock
+    const buf = audioCtx.createBuffer(1, 1, 22050);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+    audioUnlocked = true;
+    document.getElementById('sound-btn').style.display = 'none';
+    document.getElementById('sound-btn-on').style.display = 'flex';
+    console.log('[TV] Audio unlocked');
+  } catch(e) { console.warn('[TV] Audio unlock failed', e); }
+}
+
+function playCallSound() {
+  if (!audioCtx || !audioUnlocked) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  // Friendly 3-tone chime: do-mi-sol
+  const notes = [
+    { freq: 523.25, t: 0.00 },   // C5
+    { freq: 659.25, t: 0.22 },   // E5
+    { freq: 783.99, t: 0.44 },   // G5
+    { freq: 1046.50, t: 0.70 },  // C6 — high finish
+  ];
+  const now = audioCtx.currentTime;
+  notes.forEach(function(n) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = n.freq;
+    gain.gain.setValueAtTime(0, now + n.t);
+    gain.gain.linearRampToValueAtTime(0.5, now + n.t + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + 0.45);
+    osc.start(now + n.t);
+    osc.stop(now + n.t + 0.5);
+  });
+}
+
+// Unlock on any first tap/click anywhere
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
 
 // ── CLOCK ──────────────────────────────────────────────────────────────────
 function updateClock() {
@@ -464,18 +535,7 @@ function showOverlay(number, staff) {
   const bar = document.getElementById('ov-bar');
   bar.style.animation = 'none'; bar.offsetHeight; bar.style.animation = '';
   document.getElementById('tv-overlay').classList.add('show');
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 260, 520].forEach(function(d) {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = d === 520 ? 1047 : 880;
-      g.gain.setValueAtTime(0.35, ctx.currentTime + d/1000);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d/1000 + 0.42);
-      o.start(ctx.currentTime + d/1000);
-      o.stop(ctx.currentTime + d/1000 + 0.5);
-    });
-  } catch(e) {}
+  playCallSound();
   overlayTimer = setTimeout(function() {
     document.getElementById('tv-overlay').classList.remove('show');
   }, 5000);
