@@ -1340,6 +1340,44 @@ function goStep(step) {
   setLang('kaz');
 
 
+// ── AUDIO (phone) ──────────────────────────────────────────────────────────
+// Unlock AudioContext on first user interaction (required by all mobile browsers)
+let _phoneAudioCtx = null;
+function getPhoneAudioCtx() {
+  if (!_phoneAudioCtx) {
+    _phoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (_phoneAudioCtx.state === 'suspended') _phoneAudioCtx.resume();
+  return _phoneAudioCtx;
+}
+// Unlock on first tap anywhere (the user taps a program to get a ticket)
+document.addEventListener('touchstart', function() { getPhoneAudioCtx(); }, { once: true });
+document.addEventListener('click',      function() { getPhoneAudioCtx(); }, { once: true });
+
+function playPhoneCallSound() {
+  try {
+    const ctx = getPhoneAudioCtx();
+    const now = ctx.currentTime;
+    // Chime: C5 → E5 → G5 → C6
+    [
+      { f: 523.25, t: 0.00 },
+      { f: 659.25, t: 0.20 },
+      { f: 783.99, t: 0.40 },
+      { f: 1046.50, t: 0.62 },
+    ].forEach(function(n) {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = n.f;
+      g.gain.setValueAtTime(0, now + n.t);
+      g.gain.linearRampToValueAtTime(0.45, now + n.t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, now + n.t + 0.42);
+      osc.start(now + n.t);
+      osc.stop(now + n.t + 0.5);
+    });
+  } catch(e) { console.warn('Audio error', e); }
+}
+
 // ── CALL NOTIFICATION ──────────────────────────────────────────────────────
 let callListener = null;
 
@@ -1382,23 +1420,13 @@ function showCallNotification(prefix, num) {
   const overlay = document.getElementById('call-overlay');
   overlay.classList.add('show');
 
-  // Vibrate if supported
-  if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 500]);
+  // Vibration pattern: buzz-pause-buzz-pause-long buzz
+  if (navigator.vibrate) {
+    navigator.vibrate([400, 150, 400, 150, 600]);
+  }
 
-  // Sound beep
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 200, 400].forEach(function(delay) {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.3);
-      osc.start(ctx.currentTime + delay/1000);
-      osc.stop(ctx.currentTime + delay/1000 + 0.3);
-    });
-  } catch(e) {}
+  // Sound chime
+  playPhoneCallSound();
 }
 
 function dismissCall() {
