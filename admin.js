@@ -195,6 +195,10 @@ function renderQueue() {
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>'+
           'Следующий'+(waiting.length>0?' · '+waiting.length+' чел.':'')+
         '</button>' +
+        '<button class="btn-recall" onclick="recallCurrent()" '+(data.current?'':'disabled')+'>'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>'+
+          'Қайта / Повтор'+
+        '</button>' +
         '<button class="btn-rst" onclick="resetQ()">'+
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Сброс'+
         '</button>' +
@@ -301,6 +305,21 @@ function callNext() {
   renderAll();
   toast('▶ ' + ME.id.replace('staff_','S') + '-' + String(nxt.number).padStart(3,'0') + ' — ' + nxt.name.substring(0,28));
 }
+function recallCurrent() {
+  const data = getQueueData();
+  if (!data.current) return;
+  // Re-write the same current value to trigger Firebase listeners on client devices
+  const pfx = ME.id.replace('staff_','S');
+  const numStr = pfx + '-' + String(data.current).padStart(3,'0');
+  // Toggle to 0 then back to force a change event
+  window.db.ref('queues/' + ME.id + '/current').set(0, function() {
+    setTimeout(function() {
+      window.db.ref('queues/' + ME.id + '/current').set(data.current);
+    }, 400);
+  });
+  toast('🔔 Қайта шақырылды / Повторный вызов: ' + numStr);
+}
+
 function resetQ() {
   if (!confirm('Сбросить очередь?')) return;
   saveQueueData({ current:0, queue:[], history:[] });
