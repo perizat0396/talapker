@@ -95,8 +95,13 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .cab-icon-box svg { width: 20px; height: 20px; color: #fff; }
-.cab-label-kaz { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .5px; }
-.cab-label-rus { font-size: 9px; color: rgba(255,255,255,.35); margin-top: 1px; }
+.cab-floor {
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,.7);
+  letter-spacing: .2px;
+}
+.cab-divider {
+  font-size: 18px; color: rgba(255,255,255,.25); margin: 0 2px; font-weight: 300;
+}
 .cab-number-big {
   font-size: 52px; font-weight: 900; color: #fff;
   letter-spacing: -2px; line-height: 1;
@@ -551,10 +556,8 @@ function buildCard(staff) {
     '<div class="cab-bar">' +
       '<div class="cab-left">' +
         '<div class="cab-icon-box">' + SVG.door + '</div>' +
-        '<div>' +
-          '<div class="cab-label-kaz">Кабинет / Кабинет</div>' +
-          '<div class="cab-label-rus">' + staff.floor + '</div>' +
-        '</div>' +
+        '<div class="cab-floor">' + staff.floor + '</div>' +
+        '<div class="cab-divider">/</div>' +
       '</div>' +
       '<div class="cab-number-big">' + staff.cabinet + '</div>' +
     '</div>' +
