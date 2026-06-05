@@ -54,7 +54,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  padding: 24px 278px 90px 28px;
+  padding: 24px 356px 90px 28px;
 }
 
 /* ═══ CARD ═══ */
@@ -278,24 +278,24 @@ body {
   right: 20px;
   top: 80px;
   bottom: 54px;
-  width: 240px;
+  width: 320px;
   background: #fff;
   border: 2px solid #dde5f8;
   border-radius: 24px;
-  padding: 22px 18px 18px;
+  padding: 26px 22px 22px;
   box-shadow: 0 8px 32px rgba(48,86,211,.12);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
   z-index: 100;
 }
 .qr-canvas-wrap {
-  width: 196px; height: 196px;
-  border-radius: 16px; overflow: hidden;
+  width: 272px; height: 272px;
+  border-radius: 18px; overflow: hidden;
   border: 2px solid #e8eef8;
   display: flex; align-items: center; justify-content: center;
   background: #fff;
   box-shadow: 0 4px 16px rgba(48,86,211,.08);
 }
-.qr-canvas-wrap img, .qr-canvas-wrap canvas { width: 196px !important; height: 196px !important; }
+.qr-canvas-wrap img, .qr-canvas-wrap canvas { width: 272px !important; height: 272px !important; }
 .qr-divider {
   width: 40px; height: 3px;
   background: linear-gradient(90deg, #3056D3, #6b8aff);
@@ -692,8 +692,8 @@ function initQR() {
   try {
     new QRCode(document.getElementById('qr-canvas'), {
       text: url,
-      width: 196,
-      height: 196,
+      width: 272,
+      height: 272,
       colorDark: '#1a2e8f',
       colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.M,
@@ -701,7 +701,7 @@ function initQR() {
   } catch(e) {
     // Fallback: img from API
     const img = document.createElement('img');
-    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=196x196&color=1a2e8f&data=' + encodeURIComponent(url);
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=272x272&color=1a2e8f&data=' + encodeURIComponent(url);
     img.style.width = '132px'; img.style.height = '132px';
     document.getElementById('qr-canvas').appendChild(img);
   }
