@@ -319,4 +319,37 @@ let timer = null;
 function startRefresh() { timer = setInterval(function(){ if(ME) renderAll(); }, 3500); }
 function stopRefresh()  { if(timer) clearInterval(timer); }
 
+// ── AUTO DAILY RESET ──────────────────────────────────────────────────────────
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function doAutoReset() {
+  if (!window.db) return;
+  window.db.ref('queues').once('value', function(snap) {
+    const all = snap.val() || {};
+    const updates = {};
+    Object.keys(all).forEach(function(id) {
+      updates[id] = { current: 0, nextNumber: 0, queue: [], history: [] };
+    });
+    window.db.ref('queues').set(updates);
+  });
+  window.db.ref('active').set({});
+  window.db.ref('meta/lastResetDate').set(todayStr());
+  toast('🔄 Жаңа күн — деректер тазартылды / Новый день — данные сброшены');
+}
+
+function checkDailyReset() {
+  if (!window.db) return;
+  window.db.ref('meta/lastResetDate').once('value', function(snap) {
+    const last = snap.val();
+    const today = todayStr();
+    if (last && last !== today) {
+      doAutoReset();
+    } else if (!last) {
+      window.db.ref('meta/lastResetDate').set(today);
+    }
+  });
+}
+
+checkDailyReset();
+
 listenFirebase();
