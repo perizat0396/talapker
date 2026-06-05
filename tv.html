@@ -34,7 +34,7 @@ body {
 }
 .hdr-logo img { width: 46px; height: 46px; object-fit: contain; border-radius: 6px; }
 .hdr-uni-kaz { font-size: 15px; font-weight: 800; color: #fff; line-height: 1.2; }
-.hdr-uni-rus { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
+.hdr-uni-rus { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
 .hdr-right { display: flex; align-items: center; gap: 18px; }
 .hdr-live {
   display: flex; align-items: center; gap: 7px;
@@ -50,7 +50,7 @@ body {
 /* ═══ GRID ═══ */
 .tv-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
   padding: 24px 28px 90px;
 }
@@ -59,7 +59,7 @@ body {
 .tv-card {
   background: #fff;
   border: 2px solid #dde5f8;
-  border-radius: 22px;
+  border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(48,86,211,.07);
   transition: border-color .35s, box-shadow .35s;
@@ -68,192 +68,189 @@ body {
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16,185,129,.12), 0 8px 28px rgba(16,185,129,.14);
 }
-.tv-card.just-called { animation: cardPulse .9s ease; }
+.tv-card.just-called { animation: cardPulse .8s ease; }
 @keyframes cardPulse {
   0%,100% { transform:none; }
-  40% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(16,185,129,.18), 0 12px 40px rgba(16,185,129,.22); }
+  40% { transform:scale(1.02); box-shadow:0 0 0 8px rgba(16,185,129,.18),0 12px 40px rgba(16,185,129,.22); }
 }
 
-/* Cabinet bar */
+/* ── Cabinet accent ── */
 .cab-bar {
-  background: linear-gradient(135deg, #2541b2, #3056D3);
-  padding: 13px 18px;
+  background: linear-gradient(135deg, #1a2e8f, #3056D3);
+  padding: 0 22px;
   display: flex; align-items: center; justify-content: space-between;
+  min-height: 72px;
+  position: relative; overflow: hidden;
 }
-.cab-info { display: flex; align-items: center; gap: 10px; }
-.cab-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center;
+.cab-bar::before {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,.07); pointer-events: none;
 }
-.cab-icon svg { width: 18px; height: 18px; color: #fff; }
-.cab-labels .kaz { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .5px; }
-.cab-labels .rus { font-size: 9px; color: rgba(255,255,255,.4); }
-.cab-number { font-size: 30px; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.cab-left { display: flex; align-items: center; gap: 10px; }
+.cab-icon-box {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+}
+.cab-icon-box svg { width: 20px; height: 20px; color: #fff; }
+.cab-label-kaz { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .5px; }
+.cab-label-rus { font-size: 9px; color: rgba(255,255,255,.35); margin-top: 1px; }
+.cab-number-big {
+  font-size: 52px; font-weight: 900; color: #fff;
+  letter-spacing: -2px; line-height: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
 
-/* Called block */
-.called-block {
-  padding: 20px 18px 14px;
+/* ── Called number ── */
+.called-row {
+  padding: 20px 22px 14px;
   display: flex; align-items: center; gap: 14px;
   border-bottom: 1.5px solid #eef2fb;
 }
-.called-icon {
-  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+.called-icon-box {
+  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
   background: #f0fdf4; border: 1.5px solid #bbf7d0;
   display: flex; align-items: center; justify-content: center;
   transition: background .3s, border-color .3s;
 }
-.called-icon svg { width: 22px; height: 22px; color: #d1d5e8; transition: color .3s; }
-.tv-card.active .called-icon { background: #dcfce7; border-color: #86efac; }
-.tv-card.active .called-icon svg { color: #059669; }
+.called-icon-box svg { width: 20px; height: 20px; color: #d1d5e8; transition: color .3s; }
+.tv-card.active .called-icon-box { background: #dcfce7; border-color: #86efac; }
+.tv-card.active .called-icon-box svg { color: #059669; }
 
-.called-right { flex: 1; min-width: 0; }
-.called-lbl-kaz { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: .5px; text-transform: uppercase; }
-.called-lbl-rus { font-size: 9px; color: #cbd5e1; margin-top: 1px; }
-.called-num {
-  font-size: 48px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-top: 4px;
-  color: #d1d5e8; transition: color .4s, text-shadow .4s;
+.called-num-col { flex: 1; }
+.called-tiny-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .8px;
+  color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;
+}
+.called-big-num {
+  font-size: 54px; font-weight: 900; letter-spacing: -2px; line-height: 1;
+  color: #dde5f8; transition: color .4s, text-shadow .4s;
   font-variant-numeric: tabular-nums;
 }
-.called-num .pfx { font-size: 22px; letter-spacing: 0; }
-.tv-card.active .called-num {
+.called-big-num .pfx { font-size: 24px; letter-spacing: 0; }
+.tv-card.active .called-big-num {
   color: #059669;
-  text-shadow: 0 0 30px rgba(5,150,105,.2);
+  text-shadow: 0 0 28px rgba(5,150,105,.22);
   animation: numPop .5s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes numPop { from{transform:scale(.7);opacity:.3;} to{transform:none;opacity:1;} }
 
-.called-status {
-  display: flex; align-items: center; gap: 5px;
-  margin-top: 6px; font-size: 11px; font-weight: 600;
+/* ── Queue numbers ── */
+.queue-section { padding: 12px 18px 16px; }
+.qs-head {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
 }
-.cs-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1d5e8; flex-shrink: 0; }
-.called-status .kaz { color: #94a3b8; }
-.called-status .rus { font-size: 10px; color: #cbd5e1; margin-left: 2px; }
-.tv-card.active .cs-dot { background: #10b981; animation: blink .9s ease-in-out infinite; }
-.tv-card.active .called-status .kaz { color: #059669; }
-.tv-card.active .called-status .rus { color: #34d399; }
-
-/* Queue list */
-.queue-section { padding: 10px 18px 14px; }
-.qs-header {
-  display: flex; align-items: center; gap: 7px;
-  margin-bottom: 8px;
-}
-.qs-icon {
-  width: 22px; height: 22px; border-radius: 6px;
+.qs-head-icon {
+  width: 20px; height: 20px; border-radius: 5px;
   background: #eef2fb; display: flex; align-items: center; justify-content: center;
 }
-.qs-icon svg { width: 12px; height: 12px; color: #3056D3; }
-.qs-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; }
+.qs-head-icon svg { width: 11px; height: 11px; color: #3056D3; }
+.qs-head-label { font-size: 9.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; flex: 1; }
 .qs-count {
-  margin-left: auto; font-size: 10px; font-weight: 800;
-  background: #eef2fb; color: #3056D3; border-radius: 6px; padding: 2px 7px;
+  font-size: 10px; font-weight: 800;
+  background: #eef2fb; color: #3056D3;
+  border-radius: 6px; padding: 2px 8px;
 }
 
-.q-rows { display: flex; flex-direction: column; gap: 5px; }
-.q-row {
-  display: flex; align-items: center; gap: 10px;
-  background: #f8faff; border: 1.5px solid #e8eef8;
-  border-radius: 10px; padding: 8px 12px;
-  transition: border-color .2s;
+.num-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.num-chip {
+  font-size: 18px; font-weight: 800; color: #0f1f4b;
+  background: #f4f7ff; border: 1.5px solid #dde5f8;
+  border-radius: 10px; padding: 6px 14px;
+  font-variant-numeric: tabular-nums;
+  transition: background .2s, border-color .2s;
+  display: flex; align-items: center; gap: 6px;
 }
-.q-row.next-row {
-  background: #f0f4ff; border-color: #c7d2f8;
+.num-chip.next-chip {
+  background: #eef2fb; border-color: #c7d2f8;
+  color: #3056D3;
 }
-.qr-num {
-  font-size: 16px; font-weight: 900; color: #0f1f4b;
-  font-variant-numeric: tabular-nums; min-width: 44px;
-}
-.q-row.next-row .qr-num { color: #3056D3; }
-.qr-body { flex: 1; min-width: 0; }
-.qr-code { font-size: 9.5px; font-weight: 700; color: #94a3b8; margin-bottom: 1px; }
-.qr-name { font-size: 11px; font-weight: 600; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.qr-time { font-size: 10px; color: #94a3b8; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-.next-badge {
-  font-size: 8.5px; font-weight: 800; letter-spacing: .4px;
-  background: #eef2fb; color: #3056D3; border-radius: 5px; padding: 2px 6px; flex-shrink: 0;
-}
+.next-arrow { color: #3056D3; display: flex; align-items: center; }
+.next-arrow svg { width: 12px; height: 12px; }
 
-.q-empty {
-  text-align: center; padding: 10px 0 4px;
-  font-size: 11px; color: #cbd5e1; font-weight: 500;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+.chips-empty {
+  font-size: 12px; color: #cbd5e1; font-weight: 500;
+  display: flex; align-items: center; gap: 6px; padding: 4px 0;
 }
-.q-empty svg { width: 14px; height: 14px; color: #dde5f8; }
+.chips-empty svg { width: 14px; height: 14px; color: #e2e8f0; }
 
-.q-more {
-  text-align: center; font-size: 10px; color: #94a3b8;
-  font-weight: 600; margin-top: 4px;
-  padding: 5px;
-  background: #f8faff; border-radius: 8px;
+.chips-more {
+  font-size: 11px; color: #94a3b8; font-weight: 700;
+  background: #f4f7ff; border: 1.5px solid #e8eef8;
+  border-radius: 10px; padding: 6px 12px;
 }
 
 /* ═══ EMPTY STATE ═══ */
 .tv-empty {
   grid-column: 1/-1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 20px; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 20px; text-align: center;
 }
 .tv-empty-icon {
-  width: 80px; height: 80px; border-radius: 24px;
+  width: 80px; height: 80px; border-radius: 22px;
   background: #fff; border: 2px solid #dde5f8;
-  display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
 }
-.tv-empty-icon svg { width: 36px; height: 36px; color: #c7d2f8; }
-.tv-empty h2 { font-size: 20px; font-weight: 800; color: #334155; margin-bottom: 6px; }
+.tv-empty-icon svg { width: 34px; height: 34px; color: #c7d2f8; }
+.tv-empty h2 { font-size: 20px; font-weight: 800; color: #334155; margin-bottom: 5px; }
 .tv-empty p  { font-size: 13px; color: #94a3b8; }
 
 /* ═══ BIG OVERLAY ═══ */
 #tv-overlay {
   display: none; position: fixed; inset: 0; z-index: 9999;
-  background: rgba(238,242,251,.93); backdrop-filter: blur(14px);
-  align-items: center; justify-content: center; flex-direction: column;
+  background: rgba(238,242,251,.94); backdrop-filter: blur(16px);
+  align-items: center; justify-content: center;
 }
 #tv-overlay.show { display: flex; }
-.ov-inner { text-align: center; animation: ovIn .45s cubic-bezier(.34,1.4,.64,1); }
-@keyframes ovIn { from{transform:scale(.5) translateY(60px);opacity:0;} to{transform:none;opacity:1;} }
+.ov-inner { text-align: center; animation: ovIn .42s cubic-bezier(.34,1.4,.64,1); }
+@keyframes ovIn { from{transform:scale(.5) translateY(50px);opacity:0;} to{transform:none;opacity:1;} }
 
-.ov-badge {
+.ov-pill {
   display: inline-flex; align-items: center; gap: 8px;
   background: #dcfce7; border: 1.5px solid #86efac;
-  border-radius: 20px; padding: 8px 20px; margin-bottom: 20px;
+  border-radius: 24px; padding: 8px 22px; margin-bottom: 22px;
 }
-.ov-badge svg { width: 18px; height: 18px; color: #059669; }
-.ov-badge-kaz { font-size: 15px; font-weight: 800; color: #059669; }
-.ov-badge-rus { font-size: 12px; color: #34d399; margin-left: 2px; }
+.ov-pill svg { width: 18px; height: 18px; color: #059669; }
+.ov-pill-kaz { font-size: 15px; font-weight: 800; color: #059669; }
+.ov-pill-rus { font-size: 12px; color: #34d399; }
 
 .ov-num {
-  font-size: clamp(110px, 20vw, 190px); font-weight: 900; line-height: 1; letter-spacing: -8px;
-  color: #059669; text-shadow: 0 0 80px rgba(5,150,105,.25);
+  font-size: clamp(120px, 22vw, 200px); font-weight: 900;
+  line-height: 1; letter-spacing: -8px; color: #059669;
+  text-shadow: 0 0 80px rgba(5,150,105,.28);
   animation: ovGlow 1.4s ease-in-out infinite;
   font-variant-numeric: tabular-nums;
 }
 @keyframes ovGlow {
-  0%,100%{text-shadow:0 0 80px rgba(5,150,105,.25);}
-  50%    {text-shadow:0 0 120px rgba(5,150,105,.45);}
+  0%,100%{text-shadow:0 0 80px rgba(5,150,105,.28);}
+  50%    {text-shadow:0 0 130px rgba(5,150,105,.5);}
 }
 .ov-num span { font-size: .42em; letter-spacing: -2px; }
 
 .ov-cab-row {
-  margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-top: 20px; display: flex; align-items: center;
+  justify-content: center; gap: 12px;
 }
 .ov-cab-icon {
-  width: 44px; height: 44px; background: #dcfce7; border: 1.5px solid #86efac;
-  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; background: #dcfce7;
+  border: 1.5px solid #86efac; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
 }
-.ov-cab-icon svg { width: 22px; height: 22px; color: #059669; }
-.ov-cab-text-kaz { font-size: 22px; font-weight: 900; color: #0f1f4b; letter-spacing: -.5px; }
-.ov-cab-text-rus { font-size: 15px; color: #64748b; font-weight: 500; margin-top: 2px; }
+.ov-cab-icon svg { width: 24px; height: 24px; color: #059669; }
+.ov-cab-kaz { font-size: 24px; font-weight: 900; color: #0f1f4b; letter-spacing: -.5px; }
+.ov-cab-rus { font-size: 15px; color: #64748b; font-weight: 500; margin-top: 2px; }
 
-.ov-bar-wrap { margin: 28px auto 0; width: 300px; height: 4px; background: #dde5f8; border-radius: 2px; overflow: hidden; }
-.ov-bar { height: 100%; background: #059669; border-radius: 2px; animation: barFill 5s linear forwards; }
-@keyframes barFill { from{width:100%;} to{width:0%;} }
+.ov-bar-wrap { margin: 30px auto 0; width: 280px; height: 4px; background: #dde5f8; border-radius: 2px; overflow: hidden; }
+.ov-bar { height: 100%; background: #059669; border-radius: 2px; animation: barShrink 5s linear forwards; }
+@keyframes barShrink { from{width:100%;} to{width:0%;} }
 
 /* ═══ TICKER ═══ */
 .ticker {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 44px;
-  background: #fff; border-top: 1.5px solid #dde5f8; overflow: hidden;
-  display: flex; align-items: center;
+  position: fixed; bottom: 0; left: 0; right: 0; height: 42px;
+  background: #fff; border-top: 1.5px solid #dde5f8;
+  overflow: hidden; display: flex; align-items: center;
 }
 .ticker-track {
   display: flex; align-items: center; gap: 48px;
@@ -261,12 +258,12 @@ body {
   animation: tickerMove 38s linear infinite;
 }
 @keyframes tickerMove { from{transform:translateX(100vw);} to{transform:translateX(-100%);} }
-.ti { font-size: 13px; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.ti svg { width: 14px; height: 14px; flex-shrink: 0; }
-.ti .n  { color: #3056D3; font-weight: 800; }
+.ti { font-size: 13px; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.ti svg { width: 13px; height: 13px; flex-shrink: 0; }
+.ti .n { color: #3056D3; font-weight: 800; }
 .ti.c .n { color: #059669; }
 .ti.c svg { color: #10b981; }
-.ti-sep { color: #c7d2f8; font-size: 20px; line-height: 1; }
+.ti-sep { color: #c7d2f8; font-size: 18px; }
 </style>
 </head>
 <body>
@@ -303,29 +300,31 @@ body {
 </div>
 
 <!-- TICKER -->
-<div class="ticker"><div class="ticker-track" id="ticker-track">
-  <span class="ti">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-    Деректер күтілуде / Ожидание данных
-  </span>
-</div></div>
+<div class="ticker">
+  <div class="ticker-track" id="ticker-track">
+    <span class="ti">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Деректер күтілуде / Ожидание данных
+    </span>
+  </div>
+</div>
 
 <!-- BIG OVERLAY -->
 <div id="tv-overlay">
   <div class="ov-inner">
-    <div class="ov-badge">
+    <div class="ov-pill">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-      <span class="ov-badge-kaz">Шақырылуда</span>
-      <span class="ov-badge-rus">/ Вызывается</span>
+      <span class="ov-pill-kaz">Шақырылуда</span>
+      <span class="ov-pill-rus">/ Вызывается</span>
     </div>
     <div class="ov-num" id="ov-num"><span>B-</span>001</div>
     <div class="ov-cab-row">
       <div class="ov-cab-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
       </div>
       <div>
-        <div class="ov-cab-text-kaz" id="ov-cab-kaz">Кабинет 101</div>
-        <div class="ov-cab-text-rus" id="ov-cab-rus">1 этаж</div>
+        <div class="ov-cab-kaz" id="ov-cab-kaz">Кабинет 101</div>
+        <div class="ov-cab-rus" id="ov-cab-rus">1 этаж</div>
       </div>
     </div>
     <div class="ov-bar-wrap"><div class="ov-bar" id="ov-bar"></div></div>
@@ -333,26 +332,31 @@ body {
 </div>
 
 <script>
-let QUEUES = {}, ACTIVE = {}, overlayTimer = null;
-
-/* ── ICONS ── */
+// ── SVG ICONS ──────────────────────────────────────────────────────────────
 const SVG = {
-  door: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1" fill="currentColor" stroke="none"/></svg>',
-  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
-  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
-  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>',
+  door:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><circle cx="6.5" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  bell:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  inbox: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>',
+  chev:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>',
 };
 
-/* ── CLOCK ── */
+// ── STATE ──────────────────────────────────────────────────────────────────
+let QUEUES = {}, ACTIVE = {}, overlayTimer = null;
+
+// ── CLOCK ──────────────────────────────────────────────────────────────────
 function updateClock() {
   const n = new Date();
-  document.getElementById('tv-clock').textContent = n.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('tv-date').textContent  = n.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
+  document.getElementById('tv-clock').textContent =
+    n.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('tv-date').textContent =
+    n.toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'long'});
 }
-setInterval(updateClock, 1000); updateClock();
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ── HELPERS ── */
+// ── HELPERS ────────────────────────────────────────────────────────────────
 function getPrefix(staff) {
   if (!staff || !staff.programs || !staff.programs.length) return 'S';
   const c = staff.programs[0];
@@ -362,9 +366,57 @@ function getPrefix(staff) {
   return 'B';
 }
 
-/* ── FIREBASE ── */
+function todayStr() {
+  return new Date().toISOString().slice(0, 10); // "2025-06-05"
+}
+
+// ── AUTO DAILY RESET ───────────────────────────────────────────────────────
+function scheduleNextMidnightReset() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 5, 0); // 00:00:05 next day
+  const msUntilMidnight = midnight - now;
+  setTimeout(function() {
+    doAutoReset();
+    scheduleNextMidnightReset(); // schedule next night
+  }, msUntilMidnight);
+}
+
+function doAutoReset() {
+  if (!window.db) return;
+  console.log('[TV] Auto daily reset at', new Date().toLocaleString());
+  // Reset all queues
+  window.db.ref('queues').once('value', function(snap) {
+    const all = snap.val() || {};
+    const updates = {};
+    Object.keys(all).forEach(function(id) {
+      updates[id] = { current: 0, nextNumber: 0, queue: [], history: [] };
+    });
+    window.db.ref('queues').set(updates);
+  });
+  // Store reset date
+  window.db.ref('meta/lastResetDate').set(todayStr());
+}
+
+function checkAndAutoReset() {
+  if (!window.db) return;
+  window.db.ref('meta/lastResetDate').once('value', function(snap) {
+    const last = snap.val();
+    const today = todayStr();
+    if (last && last !== today) {
+      doAutoReset();
+    } else if (!last) {
+      window.db.ref('meta/lastResetDate').set(today);
+    }
+  });
+}
+
+// ── FIREBASE ───────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
   if (!window.db) return;
+
+  checkAndAutoReset();
+  scheduleNextMidnightReset();
 
   window.db.ref('active').on('value', function(snap) {
     ACTIVE = snap.val() || {};
@@ -382,7 +434,10 @@ window.addEventListener('DOMContentLoaded', function() {
         showOverlay(nc, staff);
         setTimeout(function() {
           var el = document.getElementById('card-' + id);
-          if (el) { el.classList.add('just-called'); setTimeout(function(){ el.classList.remove('just-called'); }, 900); }
+          if (el) {
+            el.classList.add('just-called');
+            setTimeout(function(){ el.classList.remove('just-called'); }, 900);
+          }
         }, 80);
       }
     });
@@ -391,13 +446,16 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-/* ── OVERLAY ── */
+// ── OVERLAY ────────────────────────────────────────────────────────────────
 function showOverlay(number, staff) {
   if (overlayTimer) clearTimeout(overlayTimer);
   const pfx = getPrefix(staff);
-  document.getElementById('ov-num').innerHTML = '<span>' + pfx + '-</span>' + String(number).padStart(3,'0');
-  document.getElementById('ov-cab-kaz').textContent = 'Кабинет ' + (staff ? staff.cabinet : '—');
-  document.getElementById('ov-cab-rus').textContent = staff ? staff.floor : '';
+  document.getElementById('ov-num').innerHTML =
+    '<span>' + pfx + '-</span>' + String(number).padStart(3,'0');
+  document.getElementById('ov-cab-kaz').textContent =
+    'Кабинет ' + (staff ? staff.cabinet : '—');
+  document.getElementById('ov-cab-rus').textContent =
+    staff ? staff.floor : '';
   const bar = document.getElementById('ov-bar');
   bar.style.animation = 'none'; bar.offsetHeight; bar.style.animation = '';
   document.getElementById('tv-overlay').classList.add('show');
@@ -409,23 +467,26 @@ function showOverlay(number, staff) {
       o.frequency.value = d === 520 ? 1047 : 880;
       g.gain.setValueAtTime(0.35, ctx.currentTime + d/1000);
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d/1000 + 0.42);
-      o.start(ctx.currentTime + d/1000); o.stop(ctx.currentTime + d/1000 + 0.5);
+      o.start(ctx.currentTime + d/1000);
+      o.stop(ctx.currentTime + d/1000 + 0.5);
     });
-  } catch(e){}
-  overlayTimer = setTimeout(function(){ document.getElementById('tv-overlay').classList.remove('show'); }, 5000);
+  } catch(e) {}
+  overlayTimer = setTimeout(function() {
+    document.getElementById('tv-overlay').classList.remove('show');
+  }, 5000);
 }
 document.getElementById('tv-overlay').addEventListener('click', function() {
-  clearTimeout(overlayTimer); this.classList.remove('show');
+  clearTimeout(overlayTimer);
+  this.classList.remove('show');
 });
 
-/* ── RENDER ── */
+// ── RENDER ─────────────────────────────────────────────────────────────────
 function renderGrid() {
   if (typeof STAFF_CONFIG === 'undefined') return;
   const visible = STAFF_CONFIG.filter(function(s) {
     return (ACTIVE[s.id] && ACTIVE[s.id].length > 0) ||
            (QUEUES[s.id] && (QUEUES[s.id].queue || []).length > 0);
   });
-
   if (!visible.length) {
     document.getElementById('tv-grid').innerHTML =
       '<div class="tv-empty">' +
@@ -440,82 +501,69 @@ function renderGrid() {
 }
 
 function buildCard(staff) {
-  const data   = QUEUES[staff.id] || {};
-  const cur    = data.current || 0;
-  const queue  = (data.queue || []).filter(function(q){ return !q.called; });
-  const pfx    = getPrefix(staff);
+  const data  = QUEUES[staff.id] || {};
+  const cur   = data.current || 0;
+  const queue = (data.queue || []).filter(function(q){ return !q.called; });
+  const pfx   = getPrefix(staff);
   const hasCur = cur > 0;
 
-  /* called block */
+  // Called number block
   const calledHTML =
-    '<div class="called-block">' +
-      '<div class="called-icon">' + SVG.bell + '</div>' +
-      '<div class="called-right">' +
-        '<div class="called-lbl-kaz">Шақырылған нөмір</div>' +
-        '<div class="called-lbl-rus">Вызванный номер</div>' +
-        '<div class="called-num">' +
+    '<div class="called-row">' +
+      '<div class="called-icon-box">' + SVG.bell + '</div>' +
+      '<div class="called-num-col">' +
+        '<div class="called-tiny-label">Шақырылған / Вызван</div>' +
+        '<div class="called-big-num">' +
           (hasCur
             ? '<span class="pfx">' + pfx + '-</span>' + String(cur).padStart(3,'0')
-            : '<span style="font-size:28px;letter-spacing:0;color:#d1d5e8">—</span>') +
-        '</div>' +
-        '<div class="called-status">' +
-          '<div class="cs-dot"></div>' +
-          '<span class="kaz">' + (hasCur ? 'Шақырылды' : 'Күту') + '</span>' +
-          '<span class="rus">/ ' + (hasCur ? 'Вызван' : 'Ожидание') + '</span>' +
+            : '<span style="font-size:26px;letter-spacing:0;color:#d1d5e8">—</span>') +
         '</div>' +
       '</div>' +
     '</div>';
 
-  /* queue rows */
-  let qHTML = '';
+  // Queue chips — just numbers, no names
+  let chipsHTML = '';
   if (!queue.length) {
-    qHTML = '<div class="q-empty">' + SVG.inbox + ' Күту жоқ / Очередь пуста</div>';
+    chipsHTML = '<div class="chips-empty">' + SVG.inbox + ' Күтуде жоқ / Очередь пуста</div>';
   } else {
-    qHTML = '<div class="q-rows">' +
-      queue.slice(0, 5).map(function(q, i) {
-        return '<div class="q-row' + (i===0?' next-row':'') + '">' +
-          '<div class="qr-num">' + String(q.number).padStart(3,'0') + '</div>' +
-          '<div class="qr-body">' +
-            '<div class="qr-code">' + q.code + '</div>' +
-            '<div class="qr-name">' + q.name + '</div>' +
-          '</div>' +
-          '<div class="qr-time">' + (q.time||'') + '</div>' +
-          (i===0 ? '<span class="next-badge">КЕЛЕСІ</span>' : '') +
+    chipsHTML = '<div class="num-chips">' +
+      queue.slice(0, 8).map(function(q, i) {
+        return '<div class="num-chip' + (i===0 ? ' next-chip' : '') + '">' +
+          (i===0 ? '<span class="next-arrow">' + SVG.chev + '</span>' : '') +
+          String(q.number).padStart(3,'0') +
         '</div>';
       }).join('') +
+      (queue.length > 8 ? '<div class="chips-more">+' + (queue.length-8) + '</div>' : '') +
     '</div>';
-    if (queue.length > 5) {
-      qHTML += '<div class="q-more">+ тағы ' + (queue.length-5) + ' / ещё ' + (queue.length-5) + ' чел.</div>';
-    }
   }
 
-  const queueSection =
+  const queueHTML =
     '<div class="queue-section">' +
-      '<div class="qs-header">' +
-        '<div class="qs-icon">' + SVG.users + '</div>' +
-        '<span class="qs-title">Күтуде / В очереди</span>' +
+      '<div class="qs-head">' +
+        '<div class="qs-head-icon">' + SVG.users + '</div>' +
+        '<span class="qs-head-label">Күтуде / В очереди</span>' +
         '<span class="qs-count">' + queue.length + '</span>' +
       '</div>' +
-      qHTML +
+      chipsHTML +
     '</div>';
 
   return '<div class="tv-card' + (hasCur?' active':'') + '" id="card-' + staff.id + '">' +
     '<div class="cab-bar">' +
-      '<div class="cab-info">' +
-        '<div class="cab-icon">' + SVG.door + '</div>' +
-        '<div class="cab-labels">' +
-          '<div class="kaz">Кабинет / Кабинет</div>' +
-          '<div class="rus">' + staff.floor + '</div>' +
+      '<div class="cab-left">' +
+        '<div class="cab-icon-box">' + SVG.door + '</div>' +
+        '<div>' +
+          '<div class="cab-label-kaz">Кабинет / Кабинет</div>' +
+          '<div class="cab-label-rus">' + staff.floor + '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="cab-number">' + staff.cabinet + '</div>' +
+      '<div class="cab-number-big">' + staff.cabinet + '</div>' +
     '</div>' +
     calledHTML +
-    queueSection +
+    queueHTML +
   '</div>';
 }
 
-/* ── TICKER ── */
+// ── TICKER ─────────────────────────────────────────────────────────────────
 function updateTicker(staffList) {
   const items = [];
   staffList.forEach(function(s) {
@@ -536,7 +584,9 @@ function updateTicker(staffList) {
       '</span>'
     );
   });
-  if (!items.length) items.push('<span class="ti">' + SVG.clock + ' Белсенді шақырулар жоқ / Активных вызовов нет</span>');
+  if (!items.length) items.push(
+    '<span class="ti">' + SVG.clock + ' Белсенді шақырулар жоқ / Активных вызовов нет</span>'
+  );
   const sep = '<span class="ti-sep">·</span>';
   const inner = items.join(sep);
   document.getElementById('ticker-track').innerHTML = inner + sep + inner;
