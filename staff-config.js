@@ -91,7 +91,7 @@ const STAFF_CONFIG = [
     id:      'staff_05',
     name:    'Тех.секретарь 5',
     pin:     '5555',
-    cabinet: '251 кабинет',
+    cabinet: '251',
     floor:   '2 этаж',
     programs: [
       '7М01101','7M01104','7M01103','7М01201','7М01301',
@@ -119,7 +119,7 @@ const STAFF_CONFIG = [
     id:      'staff_06',
     name:    'Тех.секретарь 6',
     pin:     '6666',
-    cabinet: '251 кабинет',
+    cabinet: '251',
     floor:   '2 этаж',
     programs: [
       '8D01502','8D01501','8D01504','8D01505','8D01506',
