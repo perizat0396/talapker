@@ -104,9 +104,10 @@ body {
 .cab-divider {
   font-size: 18px; color: rgba(255,255,255,.25); margin: 0 2px; font-weight: 300;
 }
+/* ── ИСПРАВЛЕНО: меньший размер номера стола ── */
 .cab-number-big {
-  font-size: 52px; font-weight: 900; color: #fff;
-  letter-spacing: -2px; line-height: 1;
+  font-size: 28px; font-weight: 900; color: #fff;
+  letter-spacing: -1px; line-height: 1;
   text-shadow: 0 2px 12px rgba(0,0,0,.2);
 }
 
@@ -332,7 +333,6 @@ body {
     </div>
   </div>
   <div class="hdr-right">
-    <!-- Sound unlock button — click once to enable audio -->
     <button id="sound-btn" onclick="unlockAudio()" title="Дыбысты қосу / Включить звук" style="
       display:flex; align-items:center; gap:7px; cursor:pointer;
       background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25);
@@ -437,7 +437,6 @@ function unlockAudio() {
   if (audioUnlocked) return;
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // Play a silent buffer to fully unlock
     const buf = audioCtx.createBuffer(1, 1, 22050);
     const src = audioCtx.createBufferSource();
     src.buffer = buf;
@@ -446,19 +445,17 @@ function unlockAudio() {
     audioUnlocked = true;
     document.getElementById('sound-btn').style.display = 'none';
     document.getElementById('sound-btn-on').style.display = 'flex';
-    console.log('[TV] Audio unlocked');
   } catch(e) { console.warn('[TV] Audio unlock failed', e); }
 }
 
 function playCallSound() {
   if (!audioCtx || !audioUnlocked) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  // Friendly 3-tone chime: do-mi-sol
   const notes = [
-    { freq: 523.25, t: 0.00 },   // C5
-    { freq: 659.25, t: 0.22 },   // E5
-    { freq: 783.99, t: 0.44 },   // G5
-    { freq: 1046.50, t: 0.70 },  // C6 — high finish
+    { freq: 523.25, t: 0.00 },
+    { freq: 659.25, t: 0.22 },
+    { freq: 783.99, t: 0.44 },
+    { freq: 1046.50, t: 0.70 },
   ];
   const now = audioCtx.currentTime;
   notes.forEach(function(n) {
@@ -475,7 +472,6 @@ function playCallSound() {
   });
 }
 
-// Unlock on any first tap/click anywhere
 document.addEventListener('click', unlockAudio, { once: true });
 document.addEventListener('touchstart', unlockAudio, { once: true });
 
@@ -492,34 +488,34 @@ updateClock();
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
 function getPrefix(staff) {
-  if (!staff || !staff.programs || !staff.programs.length) return 'S';
-  const c = staff.programs[0];
-  if (c.startsWith('8')) return 'D';
-  if (c.startsWith('7')) return 'M';
-  if (c.startsWith('K') || c.startsWith('k')) return 'C';
+  if (!staff || !staff.subjects || !staff.subjects.length) return 'S';
+  const s = staff.subjects[0];
+  if (s === '__MASTER__')   return 'M';
+  if (s === '__COLLEGE__')  return 'C';
+  if (s === '__CREATIVE__') return 'T';
+  if (s === '__TIPO__')     return 'T';
+  if (s === '__VO__')       return 'V';
   return 'B';
 }
 
 function todayStr() {
-  return new Date().toISOString().slice(0, 10); // "2025-06-05"
+  return new Date().toISOString().slice(0, 10);
 }
 
 // ── AUTO DAILY RESET ───────────────────────────────────────────────────────
 function scheduleNextMidnightReset() {
   const now = new Date();
   const midnight = new Date(now);
-  midnight.setHours(24, 0, 5, 0); // 00:00:05 next day
+  midnight.setHours(24, 0, 5, 0);
   const msUntilMidnight = midnight - now;
   setTimeout(function() {
     doAutoReset();
-    scheduleNextMidnightReset(); // schedule next night
+    scheduleNextMidnightReset();
   }, msUntilMidnight);
 }
 
 function doAutoReset() {
   if (!window.db) return;
-  console.log('[TV] Auto daily reset at', new Date().toLocaleString());
-  // Reset all queues
   window.db.ref('queues').once('value', function(snap) {
     const all = snap.val() || {};
     const updates = {};
@@ -528,7 +524,8 @@ function doAutoReset() {
     });
     window.db.ref('queues').set(updates);
   });
-  // Store reset date
+  window.db.ref('active').set({});
+  window.db.ref('meta/globalCounter').set(0);
   window.db.ref('meta/lastResetDate').set(todayStr());
 }
 
@@ -630,7 +627,6 @@ function buildCard(staff) {
   const pfx   = getPrefix(staff);
   const hasCur = cur > 0;
 
-  // Called number block
   const calledHTML =
     '<div class="called-row">' +
       '<div class="called-icon-box">' + SVG.bell + '</div>' +
@@ -644,7 +640,6 @@ function buildCard(staff) {
       '</div>' +
     '</div>';
 
-  // Queue chips — just numbers, no names
   let chipsHTML = '';
   if (!queue.length) {
     chipsHTML = '<div class="chips-empty">' + SVG.inbox + ' Күтуде жоқ / Очередь пуста</div>';
@@ -686,7 +681,6 @@ function buildCard(staff) {
 
 // ── QR CODE ────────────────────────────────────────────────────────────────
 function initQR() {
-  // URL of the student ticket page (same origin, index.html)
   const url = window.location.href.replace('tv.html', 'index.html')
                 .replace(/[?#].*$/, '');
   try {
@@ -699,10 +693,9 @@ function initQR() {
       correctLevel: QRCode.CorrectLevel.M,
     });
   } catch(e) {
-    // Fallback: img from API
     const img = document.createElement('img');
     img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=272x272&color=1a2e8f&data=' + encodeURIComponent(url);
-    img.style.width = '132px'; img.style.height = '132px';
+    img.style.width = '272px'; img.style.height = '272px';
     document.getElementById('qr-canvas').appendChild(img);
   }
 }
@@ -718,13 +711,13 @@ function updateTicker(staffList) {
     if (c) items.push(
       '<span class="ti c">' + SVG.bell +
         '<span class="n">📢 ' + pfx + '-' + String(c).padStart(3,'0') + '</span>' +
-        '→ Кабинет ' + s.cabinet +
+        '→ ' + s.cabinet +
       '</span>'
     );
     const w = (d.queue||[]).filter(function(q){ return !q.called; }).length;
     if (w) items.push(
       '<span class="ti">' + SVG.users +
-        '<span class="n">Каб. ' + s.cabinet + '</span>' +
+        '<span class="n">' + s.cabinet + '</span>' +
         ': ' + w + ' күтуде / ожидает' +
       '</span>'
     );
