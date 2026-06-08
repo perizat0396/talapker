@@ -27,10 +27,9 @@ function tryLogin() {
 // ── SESSION ───────────────────────────────────────────────────────────────────
 let ME = null;
 let TAB = 'queue';
-let PROG_LEVEL = 'bachelor';
 
 function doLogin(staff) {
-  ME = staff; TAB = 'queue'; PROG_LEVEL = 'bachelor';
+  ME = staff; TAB = 'queue';
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminScreen').style.display = 'block';
   document.getElementById('aName').textContent = staff.name;
@@ -48,17 +47,15 @@ function logout() {
 let CACHE_QUEUE  = {};
 let CACHE_ACTIVE = {};
 
-// Данные очереди текущего сотрудника
 function getQueueData() {
-  if (!ME) return { current: 0, nextNumber: 0, queue: [], history: [] };
+  if (!ME) return { current:0, queue:[], history:[] };
   const d = CACHE_QUEUE[ME.id];
-  if (!d) return { current: 0, nextNumber: 0, queue: [], history: [] };
+  if (!d) return { current:0, queue:[], history:[] };
   if (!d.queue)   d.queue   = [];
   if (!d.history) d.history = [];
   return d;
 }
 
-// Активные ОП текущего сотрудника (массив кодов)
 function getMyActive() {
   if (!ME) return [];
   const active = CACHE_ACTIVE[ME.id];
@@ -71,11 +68,6 @@ function setMyActive(arr) {
   window.db.ref('active/' + ME.id).set(arr);
 }
 
-function setActive(obj) {
-  CACHE_ACTIVE = obj;
-  window.db.ref('active').set(obj);
-}
-
 function saveQueueData(d) {
   CACHE_QUEUE[ME.id] = d;
   window.db.ref('queues/' + ME.id).set(d);
@@ -86,31 +78,14 @@ function listenFirebase() {
     CACHE_ACTIVE = snap.val() || {};
     if (ME) renderAll();
   });
-
   window.db.ref('queues').on('value', function(snap) {
     CACHE_QUEUE = snap.val() || {};
     if (ME) renderAll();
   });
 }
 
-
-// ── LEVEL DEFINITIONS ─────────────────────────────────────────────────────────
-const LEVELS_DEF = [
-  { id:'bachelor', label:'Бакалавриат',    prefix:'6', color:'#3056D3' },
-  { id:'master',   label:'Магистратура',   prefix:'7', color:'#7c3aed' },
-  { id:'doctor',   label:'Докторантура',   prefix:'8', color:'#059669' },
-  { id:'college',  label:'Высший колледж', prefix:'K', color:'#d97706' },
-];
-
-// Только программы текущего сотрудника (из staff-config.js → programs.js)
-function getMyPrograms() {
-  if (!ME || typeof PROGRAMS === 'undefined') return [];
-  const allProgs = Object.values(PROGRAMS).flat();
-  return allProgs.filter(p => ME.programs.includes(p.code));
-}
-
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
-function renderAll() { renderTabs(); TAB === 'queue' ? renderQueue() : renderProgs(); }
+function renderAll() { renderTabs(); TAB === 'queue' ? renderQueue() : renderSubjects(); }
 
 function renderTabs() {
   const data    = getQueueData();
@@ -122,10 +97,10 @@ function renderTabs() {
       'Очередь' +
       (waiting > 0 ? '<span class="a-tbadge o">'+waiting+'</span>' : '') +
     '</button>' +
-    '<button class="a-tab '+(TAB==='progs'?'on':'')+'" onclick="switchTab(\'progs\')">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>' +
-      'Мои ОП' +
-      (active > 0 ? '<span class="a-tbadge g">'+active+'</span>' : '<span class="a-tbadge">0</span>') +
+    '<button class="a-tab '+(TAB==='subjects'?'on':'')+'" onclick="switchTab(\'subjects\')">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>' +
+      'Мой стол' +
+      (active > 0 ? '<span class="a-tbadge g">ON</span>' : '<span class="a-tbadge">OFF</span>') +
     '</button>';
 }
 function switchTab(t) { TAB = t; renderAll(); }
@@ -135,10 +110,10 @@ function renderQueue() {
   const data    = getQueueData();
   const waiting = data.queue.filter(q => !q.called);
   const served  = data.history.length;
-  const pfx     = ME.id.replace('staff_', 'S');
+  const pfx     = ME.id.replace('staff_','S');
 
   const curHTML = data.current
-    ? '<div class="cur-num" id="curNum"><span class="cur-pfx">'+pfx+'-</span>'+String(data.current).padStart(3,'0')+'</div>'
+    ? '<div class="cur-num"><span class="cur-pfx">'+pfx+'-</span>'+String(data.current).padStart(3,'0')+'</div>'
     : '<div class="cur-empty">Ожидание...</div>';
 
   const nxt = waiting[0];
@@ -155,8 +130,8 @@ function renderQueue() {
     ? waiting.slice(0,15).map(function(q,i) {
         return '<div class="q-row '+(i===0?'nx':'')+'">' +
           '<div class="q-n '+(i===0?'nx':'')+'">'+String(q.number).padStart(3,'0')+'</div>' +
-          '<div class="q-b"><div class="q-c">'+q.code+'</div><div class="q-nm">'+q.name+'</div></div>' +
-          '<div class="q-t">'+q.time+'</div>' +
+          '<div class="q-b"><div class="q-c">'+q.time+'</div>' +
+          '<div class="q-nm">'+(q.name||'—')+'</div></div>' +
           (i===0 ? '<span class="nx-tag">Следующий</span>' : '') +
         '</div>';
       }).join('')
@@ -166,15 +141,14 @@ function renderQueue() {
     ? data.history.slice().reverse().slice(0,8).map(function(h) {
         return '<div class="q-row">' +
           '<div class="q-n" style="background:#e8ecf8;color:var(--text-3)">'+String(h.number).padStart(3,'0')+'</div>' +
-          '<div class="q-b"><div class="q-c">'+h.code+'</div><div class="q-nm">'+h.name+'</div></div>' +
-          '<div class="q-t">'+h.calledAt+'</div>' +
+          '<div class="q-b"><div class="q-c">'+h.calledAt+'</div><div class="q-nm">'+(h.name||'—')+'</div></div>' +
         '</div>';
       }).join('')
     : '<p style="color:var(--text-3);font-size:12px;padding:6px 0">Нет записей</p>';
 
   const myAct = getMyActive();
   const warnHTML = myAct.length === 0
-    ? '<div class="warn-box"><span>⚠️</span><div><b>Нет активных ОП</b><br>Перейдите в «Мои ОП» и включите нужные программы</div></div>'
+    ? '<div class="warn-box"><span>⚠️</span><div><b>Стол не активен</b><br>Перейдите в «Мой стол» и активируйте приём</div></div>'
     : '';
 
   document.getElementById('aContent').innerHTML =
@@ -186,7 +160,7 @@ function renderQueue() {
     '</div>' +
     '<div class="panel">' +
       '<div class="p-top">' +
-        '<div class="p-top-l"><div class="p-sub">Кабинет '+ME.cabinet+' · '+ME.floor+'</div><div class="p-title">'+ME.name+'</div></div>' +
+        '<div class="p-top-l"><div class="p-sub">'+ME.cabinet+' · '+ME.floor+'</div><div class="p-title">'+ME.name+'</div></div>' +
         '<div class="p-badge">'+waiting.length+' ожидают</div>' +
       '</div>' +
       '<div class="cur-block"><div><div class="cur-lbl">Текущий вызов</div>'+curHTML+'</div>'+nextCard+'</div>' +
@@ -208,89 +182,77 @@ function renderQueue() {
     '</div>';
 }
 
-// ── PROGRAMS TAB ──────────────────────────────────────────────────────────────
-function renderProgs() {
-  const myAct   = new Set(getMyActive());
-  const myProgs = getMyPrograms();
-  const total   = myProgs.length;
-  const active  = myProgs.filter(p => myAct.has(p.code)).length;
-  const lvDef   = LEVELS_DEF.find(l => l.id === PROG_LEVEL);
+// ── SUBJECTS TAB (replaces Programs tab) ─────────────────────────────────────
+function renderSubjects() {
+  if (!ME) return;
+  const myAct  = getMyActive();
+  const isOn   = myAct.length > 0;
+  const subjects = ME.subjects || [];
 
-  // Level sub-tabs
-  const levelTabsHTML = LEVELS_DEF.map(function(lv) {
-    const lProgs  = myProgs.filter(p => p.code.startsWith(lv.prefix));
-    const lActive = lProgs.filter(p => myAct.has(p.code)).length;
-    const isEmpty = lProgs.length === 0;
-    return '<button class="lv-tab '+(PROG_LEVEL===lv.id?'on':'')+' '+(isEmpty?'empty':'')+'" onclick="switchProgLevel(\''+lv.id+'\')">' +
-      lv.label +
-      (lProgs.length > 0 ? '<span class="lv-cnt '+(lActive>0?'on':'')+'">'+lActive+'/'+lProgs.length+'</span>' : '') +
-    '</button>';
+  // Display subject list
+  const subjRows = subjects.map(function(s) {
+    // Skip internal markers for display
+    const display = s.startsWith('__') ? markerLabel(s) : s;
+    return '<div class="prog-item">' +
+      '<span class="prog-code" style="min-width:auto;font-size:12px;color:var(--text-2)">📋</span>' +
+      '<span class="prog-name">'+display+'</span>' +
+    '</div>';
   }).join('');
-
-  // Programs for current level
-  const curProgs  = myProgs.filter(p => p.code.startsWith(lvDef.prefix));
-  const curActive = curProgs.filter(p => myAct.has(p.code)).length;
-
-  const progsHTML = curProgs.length
-    ? curProgs.map(function(p) {
-        return '<div class="prog-item">' +
-          '<span class="prog-code">'+p.code+'</span>' +
-          '<span class="prog-name">'+(p.ip ? '<span class="prog-ip">IP</span>' : '')+' '+p.name+'</span>' +
-          '<label class="toggle">' +
-            '<input type="checkbox" '+(myAct.has(p.code)?'checked':'')+' onchange="toggleProg(\''+p.code+'\',this.checked)">' +
-            '<span class="toggle-sl"></span>' +
-          '</label>' +
-        '</div>';
-      }).join('')
-    : '<div class="no-progs">📋 Нет программ этого уровня</div>';
 
   document.getElementById('aContent').innerHTML =
     '<div class="progs-header">' +
-      '<div><h3>Мои ОП на сегодня</h3><p>Включите программы — студенты увидят только их</p></div>' +
+      '<div><h3>Мой стол: '+ME.cabinet+'</h3><p>'+ME.floor+' · Управление активностью</p></div>' +
       '<div class="progs-counts">' +
-        '<div class="pc g"><div class="pc-v">'+active+'</div><div class="pc-l">Активно</div></div>' +
-        '<div class="pc"><div class="pc-v">'+total+'</div><div class="pc-l">Всего</div></div>' +
+        '<div class="pc '+(isOn?'g':'')+'"><div class="pc-v">'+(isOn?'ВКЛ':'ВЫКЛ')+'</div><div class="pc-l">Статус</div></div>' +
       '</div>' +
     '</div>' +
-    '<div class="lv-tabs">'+levelTabsHTML+'</div>' +
-    '<div class="level-panel">' +
-      '<div class="lp-head">' +
-        '<div><div class="lp-title">'+lvDef.label+'</div><div class="lp-sub">'+curActive+' из '+curProgs.length+' активно</div></div>' +
-        (curProgs.length > 0
-          ? '<div class="lp-btns"><button class="btn-lv on" onclick="levelAllOn(\''+lvDef.prefix+'\')">✓ Все</button><button class="btn-lv off" onclick="levelAllOff(\''+lvDef.prefix+'\')">✕ Все</button></div>'
-          : '') +
+
+    // Big ON/OFF toggle
+    '<div class="panel" style="margin-bottom:14px">' +
+      '<div style="padding:24px 20px;text-align:center">' +
+        '<div style="font-size:13px;color:var(--text-2);margin-bottom:16px">Включите приём, чтобы студенты могли получить талон к вашему столу</div>' +
+        '<div style="display:flex;gap:12px;justify-content:center">' +
+          '<button class="btn-all-on" onclick="deskOn()" style="padding:14px 28px;font-size:14px">✓ Открыть приём</button>' +
+          '<button class="btn-all-off" onclick="deskOff()" style="padding:14px 28px;font-size:14px">✕ Закрыть приём</button>' +
+        '</div>' +
+        '<div style="margin-top:16px;padding:12px 16px;background:'+(isOn?'#f0fdf4':'#fff8e6')+';border-radius:12px;border:1.5px solid '+(isOn?'#bbf7d0':'#ffd970')+';font-size:13px;font-weight:700;color:'+(isOn?'#059669':'#7a5a00')+'">' +
+          (isOn ? '🟢 Приём открыт — студенты видят ваш стол' : '🟡 Приём закрыт — студенты не видят ваш стол') +
+        '</div>' +
       '</div>' +
-      '<div class="prog-items">'+progsHTML+'</div>' +
     '</div>' +
-    '<div class="global-acts">' +
-      '<button class="btn-all-on" onclick="allOn()">✓ Включить все мои ОП</button>' +
-      '<button class="btn-all-off" onclick="allOff()">✕ Выключить все</button>' +
-    '</div>';
+
+    // Subject list (informational)
+    (subjects.length > 0
+      ? '<div class="level-panel">' +
+          '<div class="lp-head"><div class="lp-title">Мои направления</div></div>' +
+          '<div class="prog-items">'+subjRows+'</div>' +
+        '</div>'
+      : '') ;
 }
 
-function switchProgLevel(id) { PROG_LEVEL = id; renderProgs(); }
+function markerLabel(marker) {
+  const map = {
+    '__TIPO__':     'ТиПО (после колледжа)',
+    '__VO__':       'ВО (после высшего образования)',
+    '__MASTER__':   'Магистратура / Докторантура',
+    '__COLLEGE__':  'Высший колледж',
+    '__CREATIVE__': 'Творческий ОП',
+  };
+  return map[marker] || marker;
+}
 
-// ── TOGGLE ACTIONS ────────────────────────────────────────────────────────────
-function toggleProg(code, on) {
-  let arr = getMyActive();
-  if (on) { if (!arr.includes(code)) arr.push(code); }
-  else    { arr = arr.filter(c => c !== code); }
-  setMyActive(arr);
-  renderTabs();
-}
-function levelAllOn(prefix) {
-  const codes = getMyPrograms().filter(p => p.code.startsWith(prefix)).map(p => p.code);
-  setMyActive([...new Set([...getMyActive(), ...codes])]);
+// Desk ON/OFF — simple: when ON we push a sentinel value so Firebase knows it's active
+function deskOn() {
+  // Store desk marker as active
+  setMyActive(ME.subjects || ['__ACTIVE__']);
   renderAll();
-  toast(LEVELS_DEF.find(l=>l.prefix===prefix).label + ': все включены');
+  toast('✅ Приём открыт — ' + ME.cabinet);
 }
-function levelAllOff(prefix) {
-  setMyActive(getMyActive().filter(c => !c.startsWith(prefix)));
+function deskOff() {
+  setMyActive([]);
   renderAll();
-  toast(LEVELS_DEF.find(l=>l.prefix===prefix).label + ': все выключены');
+  toast('⛔ Приём закрыт — ' + ME.cabinet);
 }
-function allOn()  { setMyActive([...ME.programs]); renderAll(); toast('Все ' + ME.programs.length + ' ОП включены'); }
-function allOff() { setMyActive([]); renderAll(); toast('Все ОП выключены'); }
 
 // ── QUEUE ACTIONS ─────────────────────────────────────────────────────────────
 function callNext() {
@@ -303,15 +265,14 @@ function callNext() {
   data.history.push({ number:nxt.number, code:nxt.code, name:nxt.name, calledAt:nowT() });
   saveQueueData(data);
   renderAll();
-  toast('▶ ' + ME.id.replace('staff_','S') + '-' + String(nxt.number).padStart(3,'0') + ' — ' + nxt.name.substring(0,28));
+  toast('▶ ' + ME.id.replace('staff_','S') + '-' + String(nxt.number).padStart(3,'0') + ' — ' + (nxt.name||'').substring(0,28));
 }
+
 function recallCurrent() {
   const data = getQueueData();
   if (!data.current) return;
-  // Re-write the same current value to trigger Firebase listeners on client devices
   const pfx = ME.id.replace('staff_','S');
   const numStr = pfx + '-' + String(data.current).padStart(3,'0');
-  // Toggle to 0 then back to force a change event
   window.db.ref('queues/' + ME.id + '/current').set(0, function() {
     setTimeout(function() {
       window.db.ref('queues/' + ME.id + '/current').set(data.current);
@@ -323,8 +284,6 @@ function recallCurrent() {
 function resetQ() {
   if (!confirm('Сбросить очередь?')) return;
   saveQueueData({ current:0, queue:[], history:[] });
-  // Also reset global counter only if this is the last active staff
-  // (simple approach: always reset counter on manual queue reset)
   if (window.db) window.db.ref('meta/globalCounter').set(0);
   renderAll();
   toast('Очередь сброшена');
@@ -342,7 +301,7 @@ function startRefresh() { timer = setInterval(function(){ if(ME) renderAll(); },
 function stopRefresh()  { if(timer) clearInterval(timer); }
 
 // ── AUTO DAILY RESET ──────────────────────────────────────────────────────────
-function todayStr() { return new Date().toISOString().slice(0, 10); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
 
 function doAutoReset() {
   if (!window.db) return;
@@ -350,15 +309,14 @@ function doAutoReset() {
     const all = snap.val() || {};
     const updates = {};
     Object.keys(all).forEach(function(id) {
-      updates[id] = { current: 0, queue: [], history: [] };
+      updates[id] = { current:0, queue:[], history:[] };
     });
     window.db.ref('queues').set(updates);
   });
   window.db.ref('active').set({});
-  // Reset global ticket counter for the new day
   window.db.ref('meta/globalCounter').set(0);
   window.db.ref('meta/lastResetDate').set(todayStr());
-  toast('🔄 Жаңа күн — деректер тазартылды / Новый день — данные сброшены');
+  toast('🔄 Жаңа күн — деректер тазартылды');
 }
 
 function checkDailyReset() {
@@ -366,14 +324,10 @@ function checkDailyReset() {
   window.db.ref('meta/lastResetDate').once('value', function(snap) {
     const last = snap.val();
     const today = todayStr();
-    if (last && last !== today) {
-      doAutoReset();
-    } else if (!last) {
-      window.db.ref('meta/lastResetDate').set(today);
-    }
+    if (last && last !== today) { doAutoReset(); }
+    else if (!last) { window.db.ref('meta/lastResetDate').set(today); }
   });
 }
 
 checkDailyReset();
-
 listenFirebase();
