@@ -248,9 +248,9 @@ const T = {
       college:'Жоғары колледж', creative:'Шығармашылық'
     },
     bachelors:{
-      tipo:'ТиПО (колледждан кейін)',
-      vo:'ЖО (жоғары білімнен кейін)',
-      so:'ЖО (мектептен кейін / орта білімнен кейін)',
+      tipo:'ТжКБ негізінде (колледждан кейін)',
+      vo:'Жоғары білім негізінде',
+      so:'Жалпы орта білім негізінде (мектептен кейін)',
     },
   },
   rus:{
@@ -432,7 +432,7 @@ function renderLevel() {
     {
       key:'bachelor', icon:IC.grad, color:'blue',
       label: t('levels').bachelor,
-      sub:{ kaz:'ТиПО · ВО · СО', rus:'ТиПО · ВО · СО', eng:'TVET · HE · SE' }[lang]
+      sub:{ kaz:'ТжКБ · ЖБ · ЖОБ', rus:'ТиПО · ВО · СО', eng:'TVET · HE · SE' }[lang]
     },
     {
       key:'master', icon:IC.master, color:'purple',
